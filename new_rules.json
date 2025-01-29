@@ -1,0 +1,75 @@
+[
+    {
+        "title": "Use multi-stage builds",
+        "category": "Base Image Selection & Versioning",
+        "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+        "regex_pattern": "(?i)^\\s*FROM\\s+[\\w\\-]+(:[\\w\\.\\-]+)?\\s+AS\\s+\\w+$",
+        "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+    },
+    
+    {
+        "title": "Create reusable stages",
+        "category": "Base Image Selection & Versioning",
+        "description": "Reusing stages for common dependencies improves efficiency and reduces redundant builds.",
+        "regex_pattern": "(?i)^\\s*FROM\\s+[\\w\\-]+(:[\\w\\.\\-]+)?\\s+AS\\s+\\w+$",
+        "suggestion": "Use named build stages to enhance modularity and reusability."
+    },
+    {
+        "title": "Choose the right base image",
+        "category": "Base Image Selection & Versioning",
+        "description": "Use trusted base images with minimal dependencies to enhance security and reduce image size.",
+        "regex_pattern": "(?i)^\\s*FROM\\s+(alpine|debian|ubuntu|centos|node|python|golang|openjdk|rust):[0-9]+(\\.[0-9]+)*$",
+        "suggestion": "Use an official and minimal base image for better security and performance."
+    },
+
+    {
+        "title": "Prevent running as root user",
+        "category": "Security Best Practices",
+        "description": "Running as root inside a container is a security risk. Use a non-root user instead.",
+        "regex_pattern": "(?i)^\\s*USER\\s+root",
+        "suggestion": "Use a non-root user for better security (e.g., 'USER appuser')."
+    },
+    {
+        "title": "Ensure a non-root user is used",
+        "category": "Security Best Practices",
+        "description": "For security reasons, containers should run as a non-root user whenever possible.",
+        "regex_pattern": "(?i)^\\s*USER\\s+\\w+",
+        "suggestion": "Define a non-root user and use it in the 'USER' instruction."
+    },
+
+        
+    {
+        "title": "Combine multiple RUN commands",
+        "category": "Build Optimization",
+        "description": "Combining RUN commands reduces the number of layers and optimizes caching.",
+        "regex_pattern": "(?i)^\\s*RUN\\s+.+\\nRUN\\s+",
+        "suggestion": "Combine multiple RUN commands using '&&' to reduce image layers."
+    },
+
+        
+    {
+        "title": "Use COPY instead of ADD",
+        "category": "Maintainability",
+        "description": "'ADD' has extra functionality like auto-extracting tar files, which is often unnecessary and can cause unexpected behavior.",
+        "regex_pattern": "(?i)^\\s*ADD\\s+",
+        "suggestion": "Use 'COPY' instead of 'ADD' unless remote file download or auto-extraction is required."
+    },
+
+    
+    {
+        "title": "Pin package versions",
+        "category": "Dependency Management",
+        "description": "Pinning package versions ensures that builds remain consistent.",
+        "regex_pattern": "(?i)RUN\\s+apt-get\\s+install\\s+-y\\s+[\\w-]+(=\\d+(\\.\\d+)*)?",
+        "suggestion": "Specify exact package versions instead of relying on the latest available version."
+    },
+
+        
+    {
+        "title": "Use .dockerignore to exclude unnecessary files",
+        "category": "CI/CD & Best Practices",
+        "description": "Excluding unnecessary files from the build context improves build speed and reduces image size.",
+        "regex_pattern": "(?i)^\\s*COPY\\s+.+(\\.git|\\.log|\\.md|node_modules|\\.DS_Store)\\b",
+        "suggestion": "Use a .dockerignore file to exclude unnecessary files from the build context."
+    }
+]
