@@ -5,12 +5,13 @@ from enum import Enum
 
 # Define severity levels based on category
 CATEGORY_SEVERITY = {
-    "Security Best Practices": "CRITICAL",
-    "Base Image Selection & Versioning": "HIGH",
-    "Dependency Management": "HIGH",
-    "Build Optimization": "MEDIUM",
-    "Maintainability": "MEDIUM",
-    "CI/CD & Best Practices": "LOW"
+    "Security Best Practices": "CRITICAL",      # Security issues are most critical
+    "Base Image Selection & Versioning": "HIGH", # Image selection affects security and stability
+    "Dependency Management": "HIGH",            # Package versioning is crucial for reproducibility
+    "Build Optimization": "MEDIUM",             # Performance and size optimizations
+    "Maintainability": "MEDIUM",               # Code quality and maintainability
+    "CI/CD & Best Practices": "LOW",        # General best practices
+    "Runtime Configuration": "LOW"              # Optional improvements
 }
 
 class Severity(Enum):
@@ -40,7 +41,7 @@ class LinterIssue:
 class DockerfileLinter:
     """A linter for Dockerfiles that checks for best practices and security issues."""
     
-    def __init__(self, rules_path="new_rules.json"):
+    def __init__(self, rules_path="rules.json"):
         """Initialize the linter with rules from a JSON file."""
         self.rules_path = rules_path
         self.rules = self._load_rules()
@@ -73,7 +74,7 @@ class DockerfileLinter:
                 regex_pattern=compiled_pattern,
                 suggestion=rule_data["suggestion"]
             ))
-        
+            
         return rules
 
     def lint_file(self, dockerfile_path: str) -> list:
@@ -116,7 +117,7 @@ class DockerfileLinter:
                             line_content=original_line.rstrip('\n')
                         ))
                         matched_lines[line_number].add(rule.id)
-
+        # Harcoded rules that cannot be used as a regex pattern.
             # After checking all lines, if no USER instruction was found
             if not has_user_instruction:
                 # Find the "Ensure a non-root user is used" rule
