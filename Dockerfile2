@@ -1,0 +1,51 @@
+# Base image issues
+FROM ubuntu:latest
+FROM python:3.9 AS builder
+
+# Multiple RUN commands that should be combined
+RUN apt-get update
+RUN apt-get install -y python3
+RUN apt-get install -y vim nano curl wget
+RUN apt-get install -y nginx
+
+# Using ADD instead of COPY
+ADD . /app
+
+# Not using --no-install-recommends
+RUN apt-get install -y redis-server
+
+# Not pinning package versions
+RUN apt-get install -y postgresql
+
+# Writing to non-ephemeral directories
+RUN mkdir -p /var/log/myapp
+RUN echo "log data" > /var/log/app.log
+
+# No USER instruction defined (should trigger the missing USER check)
+
+# Using relative path in WORKDIR
+WORKDIR app
+
+# Copying unnecessary files
+COPY .git /app/.git
+COPY README.md /app/
+COPY node_modules /app/node_modules
+
+# Multiple processes in CMD
+CMD ["sh", "-c", "nginx & python3 app.py"]
+
+# Not cleaning up apt cache
+RUN apt-get install -y redis-server
+
+# Exposing sensitive port
+EXPOSE 22
+EXPOSE 80
+EXPOSE 3389
+
+# Empty environment variable
+ENV DEBUG=
+ENV APP_VERSION
+
+# Using cd instead of WORKDIR
+RUN cd /app && \
+    mkdir temp 
