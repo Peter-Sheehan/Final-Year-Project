@@ -152,6 +152,7 @@ class DockerfileLinter:
                             matched_lines.setdefault(line_number, set()).add(rule.id)
 
         except FileNotFoundError:
+            
             print(f"Error: Could not find Dockerfile at {dockerfile_path}")
             return []
 
