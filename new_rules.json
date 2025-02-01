@@ -27,14 +27,14 @@
         "category": "Security Best Practices",
         "description": "Running as root inside a container is a security risk. Use a non-root user instead.",
         "regex_pattern": "(?i)^\\s*USER\\s+root",
-        "suggestion": "Use a non-root user for better security (e.g., 'USER appuser')."
+        "suggestion": "Use a non-root user for better security (e.g., 'USER myuser')."
     },
     {
-        "title": "Ensure a non-root user is used",
+        "title": "Use USER Instruction and specify a non root user",
         "category": "Security Best Practices",
-        "description": "For security reasons, containers should run as a non-root user whenever possible.",
-        "regex_pattern": "(?i)^\\s*USER\\s+\\w+",
-        "suggestion": "Define a non-root user and use it in the 'USER' instruction."
+        "description": "No USER instruction found in Dockerfile. Running containers as root is a security risk.",
+        "regex_pattern": "(?i)^\\s*USER\\s+(?!root\\b)\\w+",
+        "suggestion": "Add a USER instruction with a non-root user (e.g., 'USER myapp')"
     },
 
         
@@ -55,7 +55,6 @@
         "suggestion": "Use 'COPY' instead of 'ADD' unless remote file download or auto-extraction is required."
     },
 
-    
     {
         "title": "Pin package versions",
         "category": "Dependency Management",
