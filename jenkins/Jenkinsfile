@@ -64,9 +64,10 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'openai-api-key-secret', variable: 'OPENAI_API_KEY_FROM_JENKINS')]) {
-                        bat "if not exist \\\"${REPORTS_DIR}\\\" mkdir \\\"${REPORTS_DIR}\\\"\"
+                        // Ensure the reports directory exists
+                        bat "mkdir \"${REPORTS_DIR}\""
 
-                        def dockerfileInTargetRepo = params.DOCKERFILE_PATH_IN_TARGET_REPO.replace('/', '\\\\')
+                        def dockerfileInTargetRepo = params.DOCKERFILE_PATH_IN_TARGET_REPO.replace('/', '\\')
                         def targetDockerfileInClonedRepoPath = "${TARGET_REPO_DIR}\\\\${dockerfileInTargetRepo}"
 
                         def venvActivate = "${VENV_DIR}\\\\Scripts\\\\activate"
