@@ -104,16 +104,22 @@ pipeline {
                         def reportOptimized = "${REPORTS_DIR}\\optimized.dockerfile"
                         def reportExplanation = "${REPORTS_DIR}\\explanation.txt"
                         
+                        // Construct the Python analyse command with all its options
+                        def analyseCommandWithOptions = [
+                            "python \"${mainScript}\" analyse \"${targetDockerfileInClonedRepoPath}\"",
+                            "--output-csv \"${reportCsv}\"",
+                            "--output-optimized-dockerfile \"${reportOptimized}\"",
+                            "--output-explanation \"${reportExplanation}\""
+                        ].join(" ")
+
+                        // Now, construct the full command to be run by bat, 
+                        // setting the API key, activating venv, and piping 'n' to the Python script
                         def commandParts = [
                             "set OPENAI_API_KEY=${OPENAI_API_KEY_FROM_JENKINS}",
                             "&&",
                             "call \"${venvActivate}\"",
                             "&&",
-                            "python \"${mainScript}\" analyse \"${targetDockerfileInClonedRepoPath}\"",
-                            "--output-csv \"${reportCsv}\"",
-                            "--output-optimized-dockerfile \"${reportOptimized}\"",
-                            "--output-explanation \"${reportExplanation}\"",
-                            "--non-interactive"
+                            "(echo n | ${analyseCommandWithOptions})" // Pipe 'n' to the python command
                         ]
                         def pythonCommand = commandParts.join(" ")
                         
