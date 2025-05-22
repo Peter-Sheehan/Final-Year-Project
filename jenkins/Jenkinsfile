@@ -112,10 +112,13 @@ pipeline {
                             "--output-explanation \"${reportExplanation}\""
                         ].join(" ")
 
+                        // Trim the API key to remove any potential leading/trailing whitespace or newlines
+                        def sanitizedApiKey = OPENAI_API_KEY_FROM_JENKINS.trim()
+
                         // Now, construct the full command to be run by bat, 
                         // setting the API key, activating venv, and piping 'n' to the Python script
                         def commandParts = [
-                            "set OPENAI_API_KEY=${OPENAI_API_KEY_FROM_JENKINS}",
+                            "set OPENAI_API_KEY=${sanitizedApiKey}",
                             "&&",
                             "call \"${venvActivate}\"",
                             "&&",
