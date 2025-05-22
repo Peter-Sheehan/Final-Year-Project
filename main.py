@@ -1015,7 +1015,7 @@ def generate_csv_report(issues: List[LinterIssue], output_path: str):
                     'Suggestion': issue.rule.suggestion,
                     'Line Content': issue.line_content
                 })
-        Console().print(f"[green]✓ Linter CSV report generated: {output_path}[/green]")
+        Console().print(f"Linter CSV report generated: {output_path}")
     except Exception as e:
         Console().print(f"[red]Error generating CSV report: {e}[/red]")
 
@@ -1120,7 +1120,7 @@ def analyse(dockerfile_path: str, output: str, output_csv: Optional[str], output
                          os.makedirs(output_dir, exist_ok=True)
                     with open(output_optimized_dockerfile, 'w', encoding='utf-8') as f:
                         f.write(analysis.optimized_content)
-                    optimizer.console.print(f"[green]✓ Optimized Dockerfile saved to: {output_optimized_dockerfile}[/green]")
+                    optimizer.console.print(f"Optimized Dockerfile saved to: {output_optimized_dockerfile}")
                 except Exception as e:
                     optimizer.console.print(f"[red]Error saving optimized Dockerfile: {e}[/red]")
             else:
@@ -1136,7 +1136,7 @@ def analyse(dockerfile_path: str, output: str, output_csv: Optional[str], output
                         os.makedirs(output_dir, exist_ok=True)
                     with open(output_explanation, 'w', encoding='utf-8') as f:
                         f.write(analysis.explanation)
-                    optimizer.console.print(f"[green]✓ Optimization explanation saved to: {output_explanation}[/green]")
+                    optimizer.console.print(f"Optimization explanation saved to: {output_explanation}")
                 except Exception as e:
                     optimizer.console.print(f"[red]Error saving explanation: {e}[/red]")
             else:
