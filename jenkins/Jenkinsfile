@@ -5,7 +5,6 @@ pipeline {
         string(name: 'GIT_REPO_URL', defaultValue: '', description: 'URL of the target GitHub repository to analyze (e.g., https://github.com/owner/repo.git)')
         string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Branch of the target GitHub repository')
         string(name: 'DOCKERFILE_PATH_IN_TARGET_REPO', defaultValue: 'Dockerfile', description: 'Relative path to the Dockerfile within the target repository')
-        booleanParam(name: 'PERFORM_DOCKER_BUILDS', defaultValue: false, description: 'Attempt to build Docker images (requires Docker on agent)')
     }
 
     environment {
@@ -28,7 +27,7 @@ pipeline {
                     bat """
                         echo "Setting up Python virtual environment for main.py..."
                         python -m venv "${VENV_DIR}"
-                        call "${VENV_DIR}\Scripts\activate"
+                        call "${VENV_DIR}\\Scripts\\activate"
                         echo "Installing dependencies from ${WORKSPACE}/jenkins/requirements.txt..."
                         pip install -r "${WORKSPACE}/jenkins/requirements.txt"
                         echo "Dependencies installed."
@@ -74,10 +73,6 @@ pipeline {
 
                     def pythonCommand = "call \"${venvActivate}\" && python \"${mainScript}\" analyse \"${targetDockerfileInClonedRepoPath}\" --output-csv \"${reportCsv}\" --output-optimized-dockerfile \"${reportOptimized}\" --output-explanation \"${reportExplanation}\""
                     
-                    if (params.PERFORM_DOCKER_BUILDS) {
-                        pythonCommand += " --perform-docker-builds"
-                    }
-
                     echo "Verifying Dockerfile exists at: ${targetDockerfileInClonedRepoPath}"
                     bat "if not exist \"${targetDockerfileInClonedRepoPath}\" echo Dockerfile not found at ${targetDockerfileInClonedRepoPath}!"
                     
