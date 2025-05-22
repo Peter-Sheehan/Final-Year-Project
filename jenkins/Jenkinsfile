@@ -94,6 +94,12 @@ pipeline {
                         def debugVar = "THIS MUST PRINT"
                         echo "DEBUG MARKER 1: debugVar is ${debugVar}"
                         echo "DEBUG MARKER 2: OPENAI_API_KEY_FROM_JENKINS is set: ${env.OPENAI_API_KEY_FROM_JENKINS != null}"
+                        
+                        // More aggressive sanitization of the API key
+                        def rawApiKey = OPENAI_API_KEY_FROM_JENKINS
+                        echo "DEBUG: Raw API Key from Jenkins (first 10 chars): '${rawApiKey.take(10)}' (length: ${rawApiKey.length()})"
+                        def sanitizedApiKey = rawApiKey.replaceAll("\\n", "").replaceAll("\\r", "").trim() // Remove all \n and \r, then trim
+                        echo "DEBUG: Sanitized API Key (first 10 chars): '${sanitizedApiKey.take(10)}' (length: ${sanitizedApiKey.length()})"
 
                         def dockerfileInTargetRepo = params.DOCKERFILE_PATH_IN_TARGET_REPO.replace('/', '\\')
                         def targetDockerfileInClonedRepoPath = "${TARGET_REPO_DIR}\\${dockerfileInTargetRepo}"
@@ -111,9 +117,6 @@ pipeline {
                             "--output-optimized-dockerfile \"${reportOptimized}\"",
                             "--output-explanation \"${reportExplanation}\""
                         ].join(" ")
-
-                        // Trim the API key to remove any potential leading/trailing whitespace or newlines
-                        def sanitizedApiKey = OPENAI_API_KEY_FROM_JENKINS.trim()
 
                         // Now, construct the full command to be run by bat, 
                         // setting the API key, activating venv, and piping 'n' to the Python script
