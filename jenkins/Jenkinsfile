@@ -42,10 +42,10 @@ pipeline {
         stage('Analyze and Optimize Dockerfile') {
             steps {
                 script {
-                    // Verify Dockerfile2 exists
-                    bat 'if not exist Dockerfile2 echo Dockerfile2 not found!'
+                    // Verify Dockerfile exists at the new path
+                    bat 'if not exist dockerfiles\\test_small_dockerfile echo dockerfiles\\test_small_dockerfile not found!'
                     bat """
-                        call venv\\Scripts\\activate && python main.py analyze Dockerfile2 --output-csv reports/linter_report.csv --output-optimized-dockerfile reports/optimized.dockerfile --output-explanation reports/explanation.txt
+                        call venv\\Scripts\\activate && python main.py analyze dockerfiles/test_small_dockerfile --output-csv reports/linter_report.csv --output-optimized-dockerfile reports/optimized.dockerfile --output-explanation reports/explanation.txt
                     """
                 }
             }

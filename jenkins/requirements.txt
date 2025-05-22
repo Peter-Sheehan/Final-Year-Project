@@ -6,3 +6,4 @@ click
 PyGithub
 PyYAML
 requests
+beautifulsoup4
