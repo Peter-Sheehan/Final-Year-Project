@@ -1,8 +1,17 @@
 pipeline {
     agent any
 
+    parameters {
+        string(name: 'GIT_REPO_URL', defaultValue: '', description: 'URL of the target GitHub repository to analyze (e.g., https://github.com/owner/repo.git)')
+        string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Branch of the target GitHub repository')
+        string(name: 'DOCKERFILE_PATH_IN_TARGET_REPO', defaultValue: 'Dockerfile', description: 'Relative path to the Dockerfile within the target repository')
+        booleanParam(name: 'PERFORM_DOCKER_BUILDS', defaultValue: false, description: 'Attempt to build Docker images (requires Docker on agent)')
+    }
+
     environment {
-        VENV_DIR = "${WORKSPACE}\\venv"  // Define virtual environment directory
+        VENV_DIR = "${WORKSPACE}\\venv"
+        TARGET_REPO_DIR = "${WORKSPACE}\\cloned_target_repo"
+        REPORTS_DIR = "${WORKSPACE}\\reports"
     }
     
     stages {
@@ -12,26 +21,16 @@ pipeline {
                 bat 'pip --version'
             }
         }
-
-        stage('Checkout') {
-            steps {
-                script {
-                    git branch: 'main', url: 'https://github.com/Peter-Sheehan/Final-Year-Project.git'
-                    // List directory contents after checkout
-                    bat 'dir'
-                }
-            }
-        }
         
-        stage('Setup Python Environment') {
+        stage('Setup Python Environment for main.py') {
             steps {
                 script {
                     bat """
-                        echo "Setting up Python virtual environment..."
-                        python -m venv venv
-                        call venv\\Scripts\\activate
-                        echo "Installing dependencies from jenkins/requirements.txt..."
-                        pip install -r jenkins/requirements.txt
+                        echo "Setting up Python virtual environment for main.py..."
+                        python -m venv "${VENV_DIR}"
+                        call "${VENV_DIR}\Scripts\activate"
+                        echo "Installing dependencies from ${WORKSPACE}/jenkins/requirements.txt..."
+                        pip install -r "${WORKSPACE}/jenkins/requirements.txt"
                         echo "Dependencies installed."
                         pip list
                     """
@@ -39,14 +38,51 @@ pipeline {
             }
         }
         
-        stage('Analyze and Optimize Dockerfile') {
+        stage('Checkout Target Repository') {
             steps {
                 script {
-                    // Verify Dockerfile exists at the new path
-                    bat 'if not exist dockerfiles\\test_small_dockerfile echo dockerfiles\\test_small_dockerfile not found!'
-                    bat """
-                        call venv\\Scripts\\activate && python main.py analyze dockerfiles/test_small_dockerfile --output-csv reports/linter_report.csv --output-optimized-dockerfile reports/optimized.dockerfile --output-explanation reports/explanation.txt
-                    """
+                    bat "if exist \"${TARGET_REPO_DIR}\" rmdir /s /q \"${TARGET_REPO_DIR}\""
+                    bat "mkdir \"${TARGET_REPO_DIR}\""
+                    
+                    dir("${TARGET_REPO_DIR}") {
+                        echo "Cloning ${params.GIT_REPO_URL} branch ${params.GIT_BRANCH} into ${TARGET_REPO_DIR}"
+                        checkout([
+                            $class: 'GitSCM',
+                            branches: [[name: params.GIT_BRANCH]],
+                            userRemoteConfigs: [[url: params.GIT_REPO_URL]]
+                        ])
+                        echo "Contents of ${TARGET_REPO_DIR} after checkout:"
+                        bat 'dir'
+                    }
+                }
+            }
+        }
+        
+        stage('Analyze Target Dockerfile') {
+            steps {
+                script {
+                    bat "if not exist \"${REPORTS_DIR}\" mkdir \"${REPORTS_DIR}\""
+
+                    def targetFile = new File(new File(TARGET_REPO_DIR), params.DOCKERFILE_PATH_IN_TARGET_REPO.replace('/', File.separator))
+                    def targetDockerfileInClonedRepoPath = targetFile.getCanonicalPath()
+
+                    def venvActivate = "${VENV_DIR}\Scripts\activate"
+                    def mainScript = "${WORKSPACE}\main.py"
+                    def reportCsv = "${REPORTS_DIR}\linter_report.csv"
+                    def reportOptimized = "${REPORTS_DIR}\optimized.dockerfile"
+                    def reportExplanation = "${REPORTS_DIR}\explanation.txt"
+
+                    def pythonCommand = "call \"${venvActivate}\" && python \"${mainScript}\" analyse \"${targetDockerfileInClonedRepoPath}\" --output-csv \"${reportCsv}\" --output-optimized-dockerfile \"${reportOptimized}\" --output-explanation \"${reportExplanation}\""
+                    
+                    if (params.PERFORM_DOCKER_BUILDS) {
+                        pythonCommand += " --perform-docker-builds"
+                    }
+
+                    echo "Verifying Dockerfile exists at: ${targetDockerfileInClonedRepoPath}"
+                    bat "if not exist \"${targetDockerfileInClonedRepoPath}\" echo Dockerfile not found at ${targetDockerfileInClonedRepoPath}!"
+                    
+                    echo "Executing analysis command: ${pythonCommand}"
+                    bat pythonCommand
                 }
             }
         }
@@ -54,7 +90,7 @@ pipeline {
     
     post {
         always {
-            archiveArtifacts artifacts: 'reports/*.csv, reports/*.dockerfile, reports/*.txt', fingerprint: true
+            archiveArtifacts artifacts: 'reports/*.csv, reports/*.dockerfile, reports/*.txt', fingerprint: true, allowEmptyArchive: true
         }
         failure {
             echo 'Dockerfile analysis failed or optimization could not be completed'
