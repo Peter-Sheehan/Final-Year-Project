@@ -69,19 +69,41 @@ pipeline {
 
                     withCredentials([string(credentialsId: '84c11c8a-1308-47b7-81ed-869b3a635c8e', variable: 'OPENAI_API_KEY_FROM_JENKINS')]) {
                         echo "DEBUG: Entered withCredentials block."
-                        echo "DEBUG: mkdir command WAS HERE. Now removed for testing."
+                        powershell "New-Item -ItemType Directory -Force -Path \"${REPORTS_DIR}\""
+                        echo "DEBUG: Reports directory creation attempted with PowerShell."
                         
+                        // --- BEGIN: Setup for docker_best_practices.json ---
+                        def systemProfile = System.getenv("SystemDrive") + "\\WINDOWS\\system32\\config\\systemprofile"
+                        def targetConfigDir = new File(new File(systemProfile, "AppData\\Roaming"), "DockerAI")
+                        def targetBestPracticesFile = new File(targetConfigDir, "docker_best_practices.json")
+                        def sourceBestPracticesFile = "${WORKSPACE}\\jenkins\\docker_best_practices.json"
+
+                        echo "DEBUG: Target DockerAI config dir: ${targetConfigDir.getCanonicalPath()}"
+                        echo "DEBUG: Target best practices file path: ${targetBestPracticesFile.getCanonicalPath()}"
+                        echo "DEBUG: Source best practices file path: ${sourceBestPracticesFile}"
+
+                        // Create the target DockerAI directory if it doesn't exist
+                        powershell "New-Item -ItemType Directory -Force -Path '${targetConfigDir.getCanonicalPath()}'"
+                        echo "DEBUG: Ensured target DockerAI config directory exists."
+
+                        // Copy the best practices file
+                        powershell "Copy-Item -Path '${sourceBestPracticesFile}' -Destination '${targetBestPracticesFile.getCanonicalPath()}' -Force"
+                        echo "DEBUG: Copied docker_best_practices.json to target location."
+                        // --- END: Setup for docker_best_practices.json ---
+
                         def debugVar = "THIS MUST PRINT"
                         echo "DEBUG MARKER 1: debugVar is ${debugVar}"
                         echo "DEBUG MARKER 2: OPENAI_API_KEY_FROM_JENKINS is set: ${env.OPENAI_API_KEY_FROM_JENKINS != null}"
 
                         def dockerfileInTargetRepo = params.DOCKERFILE_PATH_IN_TARGET_REPO.replace('/', '\\')
-                        def targetDockerfileInClonedRepoPath = "${TARGET_REPO_DIR}\\\\${dockerfileInTargetRepo}"
-                        def venvActivate = "${VENV_DIR}\\\\Scripts\\\\activate"
-                        def mainScript = "${WORKSPACE}\\\\main.py"
-                        def reportCsv = "${REPORTS_DIR}\\\\linter_report.csv"
+                        def targetDockerfileInClonedRepoPath = "${TARGET_REPO_DIR}\\${dockerfileInTargetRepo}"
+
+                        def venvActivate = "${VENV_DIR}\\Scripts\\activate"
+                        def mainScript = "${WORKSPACE}\\main.py"
+                        def reportCsv = "${REPORTS_DIR}\\linter_report.csv"
                         def reportOptimized = "${REPORTS_DIR}\\optimized.dockerfile"
                         def reportExplanation = "${REPORTS_DIR}\\explanation.txt"
+                        
                         def commandParts = [
                             "set OPENAI_API_KEY=${OPENAI_API_KEY_FROM_JENKINS}",
                             "&&",
@@ -90,16 +112,18 @@ pipeline {
                             "python \"${mainScript}\" analyse \"${targetDockerfileInClonedRepoPath}\"",
                             "--output-csv \"${reportCsv}\"",
                             "--output-optimized-dockerfile \"${reportOptimized}\"",
-                            "--output-explanation \"${reportExplanation}\""
+                            "--output-explanation \"${reportExplanation}\"",
+                            "--non-interactive"
                         ]
                         def pythonCommand = commandParts.join(" ")
                         
                         echo "Verifying Dockerfile exists at: ${targetDockerfileInClonedRepoPath}"
-                        bat "if not exist \\\"${targetDockerfileInClonedRepoPath}\\\" echo Dockerfile not found at ${targetDockerfileInClonedRepoPath}!"
+                        bat "if not exist \"${targetDockerfileInClonedRepoPath}\" echo Dockerfile not found at ${targetDockerfileInClonedRepoPath}!"
                         
                         echo "Executing analysis command (OpenAI Key will be set from Jenkins credentials)"
                         bat pythonCommand
                     }
+                    echo "DEBUG: Exited withCredentials block."
                 }
             }
         }
