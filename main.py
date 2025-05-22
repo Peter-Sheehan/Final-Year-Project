@@ -64,14 +64,19 @@ class DockerfileOptimizer:
         env_path = self.config_dir / ".env"
         load_dotenv(dotenv_path=env_path)
         openai.api_key = os.getenv("OPENAI_API_KEY")
+
+        if openai.api_key: # If the key was found in the environment
+            # Strip any leading/trailing whitespace (including newlines) from the API key
+            openai.api_key = openai.api_key.strip()
+            
         self.github_token = os.getenv("GITHUB_TOKEN") 
 
         # Check if the APi key is not found
         if not openai.api_key:
             self.console.print(f"[yellow]Warning: OpenAI API key not found in {env_path} or environment variables.[/yellow]")
             # Prompt the user for the OpenAI API key
-            api_key = click.prompt("Enter your OpenAI API key", hide_input=True)
-            openai.api_key = api_key.strip()
+            api_key_input = click.prompt("Enter your OpenAI API key", hide_input=True)
+            openai.api_key = api_key_input.strip() # Also strip input from prompt
             # Save the entered key to the .env file
             try:
                 # Use set_key which handles file creation/update
