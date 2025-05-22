@@ -1,0 +1,4 @@
+# Placeholder requirements for benchmark testing
+# Add common packages used in benchmarks if needed, e.g.:
+# flask
+# requests 

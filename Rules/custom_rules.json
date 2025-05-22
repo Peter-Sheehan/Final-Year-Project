@@ -1,0 +1,127 @@
+{
+    "Use multi-stage builds": {
+        "pattern": "(?i)^\\s*FROM\\s+[\\w\\-]+(?:[:@][\\w\\.\\-]+)?\\s+AS\\s+\\w+$",
+        "description": "Detects use multi-stage builds in Dockerfiles. Multi-stage builds let you reduce the size of your final image, by creating a\ncleaner separation between the building of your image and the final output.",
+        "category": "General"
+    },
+    "Create reusable stages": {
+        "pattern": "(?i)^\\s*FROM\\s+[\\w\\-]+(?:[:@][\\w\\.\\-]+)?\\s+AS\\s+\\w+$",
+        "description": "Alternate pattern for Create reusable stages. Related to Use multi-stage builds.",
+        "category": "General"
+    },
+    "Choose the right base image": {
+        "pattern": "(?i)^\\s*FROM\\s+(alpine|debian|ubuntu|centos|node|python|golang|openjdk|rust):[0-9]+(\\.[0-9]+)*$",
+        "description": "Detects choose the right base image in Dockerfiles. The first step towards achieving a secure image is to choose the right base\nimage.",
+        "category": "General"
+    },
+    "Rebuild your images often": {
+        "pattern": "(?i)^\\s*#.*(?:rebuild|update|recent|current|latest|date)",
+        "description": "Detects rebuild your images often in Dockerfiles. Docker images are immutable.",
+        "category": "General"
+    },
+    "Exclude with .dockerignore": {
+        "pattern": "(?i)^\\s*\\.dockerignore\\s*$",
+        "description": "Detects exclude with .dockerignore in Dockerfiles. To exclude files not relevant to the build, without restructuring your source\nrepository, use a.",
+        "category": "General"
+    },
+    "Create ephemeral containers": {
+        "pattern": "(?i)^\\s*#.*",
+        "description": "Detects create ephemeral containers in Dockerfiles. The image defined by your Dockerfile should generate containers that are as\nephemeral as possible.",
+        "category": "General"
+    },
+    "Don't install unnecessary packages": {
+        "pattern": "(?i)^\\s*RUN\\s+(?:apt-get\\s+install|yum\\s+install|apk\\s+add|dnf\\s+install)\\s+[\\w\\-\\.\\+]+(?:\\s+[\\w\\-\\.\\+]+)*\\s*(?:&&\\s*(?:[^\\n]|\\\\\\n)*)?$",
+        "description": "Detects don't install unnecessary packages in Dockerfiles. Avoid installing extra or unnecessary packages just because they might be nice to have.",
+        "category": "General"
+    },
+    "Decouple applications": {
+        "pattern": "(?i)^\\s*RUN\\s+(?:apt-get\\s+install|yum\\s+install|apk\\s+add|dnf\\s+install)\\s+[^&|\\\\]*$",
+        "description": "Detects decouple applications in Dockerfiles. Each container should have only one concern.",
+        "category": "General"
+    },
+    "Sort multi-line arguments": {
+        "pattern": "(?i)^(?:RUN\\s+(?:apt-get\\s+install|yum\\s+install|apk\\s+add|dnf\\s+install)\\s+-y\\s+\\\\\\s*\\n(?:\\s*\\w+\\\\\\s*\\n)*(?:\\s*\\w+\\s*))$",
+        "description": "Detects sort multi-line arguments in Dockerfiles. Whenever possible, sort multi-line arguments alphanumerically to make maintenance easier.",
+        "category": "General"
+    },
+    "Leverage build cache": {
+        "pattern": "(?i)^\\s*RUN\\s+(?:apt-get\\s+update\\s+&&\\s+apt-get\\s+install\\s+|yum\\s+install\\s+|apk\\s+add\\s+|dnf\\s+install\\s+)(?:[^\\n]|\\\\\\n)*$",
+        "description": "Detects leverage build cache in Dockerfiles. When building an image, Docker steps through the instructions in your\nDockerfile, executing each in the order specified.",
+        "category": "General"
+    },
+    "Pin base image versions": {
+        "pattern": "(?i)^\\s*FROM\\s+[\\w\\-]+(:[\\w\\.\\-]+)?@sha256:[a-f0-9]{64}\\s*$",
+        "description": "Detects pin base image versions in Dockerfiles. Image tags are mutable, meaning a publisher can update a tag to point to a new\nimage.",
+        "category": "General"
+    },
+    "Build and test your images in CI": {
+        "pattern": "(?i)^\\s*RUN\\s+(?:apt-get\\s+install|yum\\s+install|apk\\s+add|dnf\\s+install)\\s+[\\w\\-\\.\\+]+(?:\\s+&&\\s+|\\s*\\\\\\s*\\n\\s*)*(?:[^\\n]|\\\\\\n)*$",
+        "description": "Detects build and test your images in ci in Dockerfiles. When you check in a change to source control or create a pull request, useGitHub Actionsor another CI/CD pipeline to\nautomatically build and tag a Docker image and test it.",
+        "category": "General"
+    },
+    "Dockerfile instructions": {
+        "pattern": "(?i)^\\s*(FROM|RUN|CMD|ENTRYPOINT|ENV|WORKDIR|COPY|ADD|USER|EXPOSE|VOLUME|LABEL|ARG|ONBUILD)\\s+",
+        "description": "Detects dockerfile instructions in Dockerfiles. Follow these recommendations on how to properly use theDockerfile instructionsto create an efficient and maintainable Dockerfile.",
+        "category": "General"
+    },
+    "FROM": {
+        "pattern": "(?i)^\\s*FROM\\s+([^\\s:]+)(?::([^\\s@]+))?(?:@([^\\s]+))?\\s*(?:AS\\s+([^\\s]+))?$",
+        "description": "Detects from in Dockerfiles. Whenever possible, use current official images as the basis for your\nimages.",
+        "category": "General"
+    },
+    "LABEL": {
+        "pattern": "(?i)^\\s*LABEL\\s+\\w+(?:\\.[\\w\\.-]+)?=",
+        "description": "Detects label in Dockerfiles. You can add labels to your image to help organize images by project, record\nlicensing information, to aid in automation, or for other reasons.",
+        "category": "General"
+    },
+    "RUN": {
+        "pattern": "(?i)^\\s*RUN\\s+(?:[^\\n\\\\]|\\\\[\\s\\S])*$",
+        "description": "Detects run in Dockerfiles. Split long or complexRUNstatements on multiple lines separated with\nbackslashes to make your Dockerfile more readable, understandable, and\nmaintainable.",
+        "category": "General"
+    },
+    "CMD": {
+        "pattern": "(?i)^\\s*CMD\\s+(?:\\[.*\\]|(?:[^\\n\\\\]|\\\\[\\s\\S])*$)",
+        "description": "Detects cmd in Dockerfiles. TheCMDinstruction should be used to run the software contained in your\nimage, along with any arguments.",
+        "category": "General"
+    },
+    "EXPOSE": {
+        "pattern": "(?i)^\\s*EXPOSE\\s+\\d+(?:/(?:tcp|udp))?(?:\\s+\\d+(?:/(?:tcp|udp))?)*$",
+        "description": "Detects expose in Dockerfiles. TheEXPOSEinstruction indicates the ports on which a container listens\nfor connections.",
+        "category": "General"
+    },
+    "ENV": {
+        "pattern": "(?i)^\\s*ENV\\s+\\w+(?:\\s+|\\=)",
+        "description": "Detects env in Dockerfiles. To make new software easier to run, you can useENVto update thePATHenvironment variable for the software your container installs.",
+        "category": "General"
+    },
+    "ADD or COPY": {
+        "pattern": "(?i)^\\s*(?:ADD|COPY)\\s+(?:--from=\\w+\\s+)?(?:\\\"[^\\\"]+\\\"|'[^']+'|\\S+)\\s+(?:\\\"[^\\\"]+\\\"|'[^']+'|\\S+)",
+        "description": "Detects add or copy in Dockerfiles. ADDandCOPYare functionally similar.",
+        "category": "General"
+    },
+    "ENTRYPOINT": {
+        "pattern": "(?i)^\\s*ENTRYPOINT\\s+(?:\\[.*\\]|(?:[^\\n\\\\]|\\\\[\\s\\S])*$)",
+        "description": "Detects entrypoint in Dockerfiles. The best use forENTRYPOINTis to set the image's main command, allowing that\nimage to be run as though it was that command, and then useCMDas the\ndefault flags.",
+        "category": "General"
+    },
+    "VOLUME": {
+        "pattern": "(?i)^\\s*VOLUME\\s+(?:\\[.*\\]|\\S+)",
+        "description": "Detects volume in Dockerfiles. You should use theVOLUMEinstruction to expose any database storage area,\nconfiguration storage, or files and folders created by your Docker container.",
+        "category": "General"
+    },
+    "USER": {
+        "pattern": "(?i)^(?:\\s*RUN\\s+(?:adduser|addgroup|useradd|groupadd)\\b(?:[^\\n]|\\\\\\n)*|\\s*USER\\s+(?!root\\b)\\w+|\\s*RUN\\s+(?!.*\\bsudo\\b)(?:apt-get|yum|apk|dnf)\\s+install(?:[^\\n]|\\\\\\n)*)$",
+        "description": "Detects user in Dockerfiles. If a service can run without privileges, useUSERto change to a non-root\nuser.",
+        "category": "General"
+    },
+    "WORKDIR": {
+        "pattern": "(?i)^(?:\\bWORKDIR\\s+\\/|(?!.*RUN\\s+cd\\s+\\/))\\S+[^&&\\|]*$",
+        "description": "Detects workdir in Dockerfiles. For clarity and reliability, you should always use absolute paths for yourWORKDIR.",
+        "category": "General"
+    },
+    "ONBUILD": {
+        "pattern": "(?i)^\\s*ONBUILD\\s+(?:(?:ADD|COPY)\\s+\\S+\\s+\\S+|RUN\\s+(?:[^\\n]|\\\\\\n)*|[^#\\n]+)$",
+        "description": "Detects onbuild in Dockerfiles. AnONBUILDcommand executes after the current Dockerfile build completes.",
+        "category": "General"
+    }
+} 

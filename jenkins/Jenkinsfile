@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+
+    environment {
+        VENV_DIR = "${WORKSPACE}\\venv"  // Define virtual environment directory
+    }
+    
+    stages {
+        stage('Verify Python Installation') {
+            steps {
+                bat 'python --version'
+                bat 'pip --version'
+            }
+        }
+
+        stage('Checkout') {
+            steps {
+                script {
+                    git branch: 'main', url: 'https://github.com/Peter-Sheehan/Final-Year-Project.git'
+                    // List directory contents after checkout
+                    bat 'dir'
+                }
+            }
+        }
+        
+        stage('Setup Python Environment') {
+            steps {
+                script {
+                    bat """
+                        echo "Setting up Python virtual environment..."
+                        python -m venv venv
+                        call venv\\Scripts\\activate
+                        echo "Installing dependencies from requirements.txt..."
+                        pip install -r requirements.txt
+                        echo "Dependencies installed."
+                        pip list
+                    """
+                }
+            }
+        }
+        
+        stage('Analyze and Optimize Dockerfile') {
+            steps {
+                script {
+                    // Verify Dockerfile2 exists
+                    bat 'if not exist Dockerfile2 echo Dockerfile2 not found!'
+                    bat """
+                        call venv\\Scripts\\activate && python main.py analyze Dockerfile2 --output-csv reports/linter_report.csv --output-optimized-dockerfile reports/optimized.dockerfile --output-explanation reports/explanation.txt
+                    """
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            archiveArtifacts artifacts: 'reports/*.csv, reports/*.dockerfile, reports/*.txt', fingerprint: true
+        }
+        failure {
+            echo 'Dockerfile analysis failed or optimization could not be completed'
+        }
+    }
+}

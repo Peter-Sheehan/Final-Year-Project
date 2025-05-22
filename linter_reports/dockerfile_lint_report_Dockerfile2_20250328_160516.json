@@ -1,0 +1,627 @@
+{
+  "dockerfile": "Dockerfile2",
+  "total_issues": 69,
+  "issues": [
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Due to the linter's limitations, it cannot verify if ENV instructions are used for setting version numbers for easier maintenance or if environment variables are unset in a single layer using RUN commands. Manual review is required to ensure best practices for using ENV instructions are followed.",
+      "suggestion": "Use ENV to update the PATH environment variable for installed software to ensure commands work without specifying full paths. Consider using ENV for setting environment variables specific to services and for managing version numbers to simplify updates. To unset an environment variable, use a RUN command with shell commands to set, use, and unset the variable in a single layer for cleaner image layers."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP29F91BA8",
+      "title": "Rebuild your images often",
+      "severity": "INFO",
+      "message": "Due to the linter's limitations in understanding Docker build context, instruction order, and external information such as the frequency of image rebuilds or the use of specific build flags like --no-cache, this rule requires manual review to ensure images are rebuilt often and dependencies are up-to-date.",
+      "suggestion": "Manually ensure that your Docker images are rebuilt frequently to incorporate the latest versions of dependencies and base images. Consider using the --no-cache option during builds to avoid using cached layers and ensure a fresh download of dependencies and base images."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP2AA02452",
+      "title": "Create ephemeral containers",
+      "severity": "HIGH",
+      "message": "Ensuring containers are ephemeral requires a comprehensive review of how the application and its dependencies are installed and managed within the container. This includes verifying that state is not stored within the container, but in external services or volumes, and that the container can be easily replaced without loss of data. This level of analysis cannot be achieved with simple line-by-line checks and requires understanding of the application architecture and Dockerfile practices as a whole.",
+      "suggestion": "Review your Dockerfile and application architecture to ensure that containers can be easily replaced without loss of data. Avoid storing state within containers, use external services or volumes for data persistence, and ensure that your container's setup and configuration are minimal and reproducible."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Due to the linter's limitations, it cannot verify if the chosen base image is from a trusted source, nor can it determine if the image is part of a recognized program for security or quality. Manual review is required to ensure the base image meets the project's security and size requirements.",
+      "suggestion": "Choose a minimal base image that is appropriate for your project's needs, such as 'alpine' for a small, security-focused base, or 'scratch' for the most minimal setup. Avoid using the ':latest' tag to ensure your builds are predictable and stable. Always verify the source of your base image to ensure it is trusted and secure."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP496813AA",
+      "title": "Sort multi-line arguments",
+      "severity": "LOW",
+      "message": "Due to the linter's inability to parse Dockerfile structure or understand context across multiple lines, checking for sorted multi-line arguments in instructions like RUN requires manual review. This is to ensure arguments are sorted alphanumerically and to verify the presence of a space before backslashes for line continuation.",
+      "suggestion": "Review the Dockerfile manually to ensure that multi-line arguments, especially in RUN instructions, are sorted alphanumerically. This includes checking for a space before backslashes used for line continuation."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP4C08BC02",
+      "title": "ONBUILD",
+      "severity": "MEDIUM",
+      "message": "Review if ONBUILD instructions are used appropriately for the intended child images and ensure they do not introduce dependency issues. Also, verify that images built with ONBUILD have a separate tag to distinguish them from other variants.",
+      "suggestion": "Avoid using ADD or COPY instructions within ONBUILD to prevent build failures due to missing resources. Consider adding a separate tag for images built with ONBUILD instructions for clearer distinction and easier management."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "INFO",
+      "message": "Due to the linter's limitations, it cannot verify if ADD is used appropriately for remote files or tar extraction, and if COPY is used correctly for all other file copying needs. Manual review is required to ensure the correct use of ADD and COPY instructions based on their specific capabilities.",
+      "suggestion": "Prefer using COPY for copying local files and ADD for remote files or automatic tar extraction. Review the usage of ADD and COPY to ensure they are used appropriately according to their specific capabilities."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Due to the linter's limitations, it cannot verify if the exposed port matches the application's traditional port beyond the most common ones. Manual review is required to ensure the EXPOSE instruction uses the appropriate port for the application.",
+      "suggestion": "Ensure the EXPOSE instruction specifies the common, traditional port for your application. If your application uses a well-known port (e.g., 80 for HTTP, 443 for HTTPS, 27017 for MongoDB), verify it is correctly exposed. For less common applications, manually verify the correct port is exposed according to the application's documentation."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP5FE7DA5A",
+      "title": "Create reusable stages",
+      "severity": "MEDIUM",
+      "message": "Due to the linter's limitations, it cannot verify if a common stage is defined and reused across multiple stages for shared components. This requires understanding the Dockerfile's structure and the context of how stages are used, which is beyond simple line-by-line analysis.",
+      "suggestion": "Define a base stage with shared components and use it as a foundation for other stages by referring to it with the FROM instruction. This approach optimizes build times and maintenance."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: USER Count",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Instruction 'USER' count is 0, which violates the requirement (less than 1). Ensures at least one USER instruction exists to switch from root.",
+      "suggestion": "Ensure the Dockerfile contains at least one USER instruction to switch to a non-root user. Avoid using 'sudo' within RUN instructions. Consider manual review for complex user permission setups and the use of 'gosu' for daemons requiring initial root privileges."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Manual review required to verify if USER instructions switch back and forth frequently, which should be avoided to reduce layers and complexity.",
+      "suggestion": "Ensure the Dockerfile contains at least one USER instruction to switch to a non-root user. Avoid using 'sudo' within RUN instructions. Consider manual review for complex user permission setups and the use of 'gosu' for daemons requiring initial root privileges."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Manual review required to ensure that when a daemon needs to be initialized as root but run as non-root, alternatives to sudo such as 'gosu' are considered.",
+      "suggestion": "Ensure the Dockerfile contains at least one USER instruction to switch to a non-root user. Avoid using 'sudo' within RUN instructions. Consider manual review for complex user permission setups and the use of 'gosu' for daemons requiring initial root privileges."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP8E7F00CF",
+      "title": "FROM",
+      "severity": "HIGH",
+      "message": "Due to the linter's limitations, it cannot verify if the image is the current official version or if it's an official image at all beyond the Alpine check. Manual review is required to ensure the image used is current and official.",
+      "suggestion": "Ensure the base image is the current official Alpine image to minimize size and maintain security. If not using Alpine, manually verify that the chosen base image is current and official."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP9F076259",
+      "title": "Leverage build cache",
+      "severity": "HIGH",
+      "message": "Due to the linter's inability to parse Dockerfile structure or understand context across multiple instructions, verifying the optimal use of the build cache requires manual review. This includes ensuring instructions are ordered to maximize cache reuse, avoiding unnecessary cache invalidation, and structuring commands to leverage caching effectively.",
+      "suggestion": "Manually review your Dockerfile to ensure instructions are ordered in a way that maximizes the reuse of the build cache. Place instructions that are less likely to change (e.g., installing packages) before instructions that change more frequently (e.g., copying source code)."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Due to the linter's limitations, it cannot verify if RUN instructions that use apt-get update and apt-get install are optimized for caching and do not leave the apt cache in the image layer. Manual review is required to ensure that apt-get update is always paired with apt-get install in the same RUN instruction to avoid caching issues, and that the apt cache is cleaned up afterwards to minimize the image size.",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: File '.dockerignore'",
+      "rule_id": "BPAEDF7F2F",
+      "title": "Exclude with .dockerignore",
+      "severity": "HIGH",
+      "message": "Required file not found: '.dockerignore'. Check if a .dockerignore file exists in the same directory as the Dockerfile.",
+      "suggestion": "Create a .dockerignore file in the same directory as your Dockerfile to exclude files not relevant to the build."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BPAF7FDF55",
+      "title": "Don't install unnecessary packages",
+      "severity": "MEDIUM",
+      "message": "Due to the linter's limitations, it cannot determine the necessity of all packages in the context of the image's purpose. Manual review is required to ensure only necessary packages are installed.",
+      "suggestion": "Review the Dockerfile to ensure it only installs packages necessary for the application or service to run. Remove any packages that are used for convenience, debugging, or are otherwise unnecessary for the operation of the container."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BPD5DA0774",
+      "title": "Build and test your images in CI",
+      "severity": "HIGH",
+      "message": "This check requires verifying that Docker images are built and tested automatically in a CI/CD pipeline, which cannot be determined from the Dockerfile alone. It involves external CI/CD configuration and setup.",
+      "suggestion": "Ensure your project's CI/CD pipeline is configured to automatically build and test the Docker image upon any new commits or pull requests. This might involve setting up GitHub Actions, GitLab CI/CD, Jenkins, or any other CI/CD tools to trigger Docker build and test commands."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: VOLUME Count",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Instruction 'VOLUME' count is 0, which violates the requirement (less than 1). Ensures at least one VOLUME instruction exists to expose mutable or user-serviceable parts of the image.",
+      "suggestion": "Add at least one VOLUME instruction to your Dockerfile to expose any database storage area, configuration storage, or files/folders created by your Docker container."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: ENTRYPOINT Count",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "MEDIUM",
+      "message": "Instruction 'ENTRYPOINT' count is 0, which violates the requirement (less than 1). Ensures at least one ENTRYPOINT instruction exists.",
+      "suggestion": "Ensure your Dockerfile includes an ENTRYPOINT instruction using the exec form (e.g., ENTRYPOINT [\"executable\", \"param1\", \"param2\"]). There should be exactly one ENTRYPOINT and at most one CMD instruction, where CMD provides default parameters."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BPFE9F359F",
+      "title": "Decouple applications",
+      "severity": "HIGH",
+      "message": "Due to the linter's limitations in understanding Dockerfile structure, application architecture, and the context across multiple lines or instructions, assessing whether a Dockerfile adheres to the principle of decoupling applications requires manual review. This involves evaluating if the Dockerfile represents a single concern per container, which cannot be reliably automated without understanding the broader context of the application's architecture and its components.",
+      "suggestion": "Ensure that each container focuses on a single concern to facilitate scalability and reusability. If your application consists of multiple components (e.g., web server, database, cache), consider splitting these into separate containers. Review your Dockerfile and application architecture to identify opportunities for decoupling into more modular containers."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies the 'scratch' image for minimal base. (Expected pattern: '^FROM\\s+scratch$')",
+      "suggestion": "Choose a minimal base image that is appropriate for your project's needs, such as 'alpine' for a small, security-focused base, or 'scratch' for the most minimal setup. Avoid using the ':latest' tag to ensure your builds are predictable and stable. Always verify the source of your base image to ensure it is trusted and secure."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies an 'alpine' image for a minimal base. (Expected pattern: '^FROM\\s+alpine')",
+      "suggestion": "Choose a minimal base image that is appropriate for your project's needs, such as 'alpine' for a small, security-focused base, or 'scratch' for the most minimal setup. Avoid using the ':latest' tag to ensure your builds are predictable and stable. Always verify the source of your base image to ensure it is trusted and secure."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Disallowed pattern found: Using 'latest' tag for base image.",
+      "suggestion": "Choose a minimal base image that is appropriate for your project's needs, such as 'alpine' for a small, security-focused base, or 'scratch' for the most minimal setup. Avoid using the ':latest' tag to ensure your builds are predictable and stable. Always verify the source of your base image to ensure it is trusted and secure."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP8E7F00CF",
+      "title": "FROM",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies an Alpine base image. (Expected pattern: '^\\s*FROM\\s+alpine')",
+      "suggestion": "Ensure the base image is the current official Alpine image to minimize size and maintain security. If not using Alpine, manually verify that the chosen base image is current and official."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BPB8CA77FB",
+      "title": "Pin base image versions",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Check if the FROM instruction specifies an image pinned by digest. (Expected pattern: '^\\s*FROM\\s+[\\w\\d.-]+(@sha256:[a-f0-9]{64})?(\\s+|$)')",
+      "suggestion": "Ensure the base image in the FROM instruction is pinned to a specific digest to guarantee reproducibility and avoid unexpected changes."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies the 'scratch' image for minimal base. (Expected pattern: '^FROM\\s+scratch$')",
+      "suggestion": "Choose a minimal base image that is appropriate for your project's needs, such as 'alpine' for a small, security-focused base, or 'scratch' for the most minimal setup. Avoid using the ':latest' tag to ensure your builds are predictable and stable. Always verify the source of your base image to ensure it is trusted and secure."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies an 'alpine' image for a minimal base. (Expected pattern: '^FROM\\s+alpine')",
+      "suggestion": "Choose a minimal base image that is appropriate for your project's needs, such as 'alpine' for a small, security-focused base, or 'scratch' for the most minimal setup. Avoid using the ':latest' tag to ensure your builds are predictable and stable. Always verify the source of your base image to ensure it is trusted and secure."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP8E7F00CF",
+      "title": "FROM",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies an Alpine base image. (Expected pattern: '^\\s*FROM\\s+alpine')",
+      "suggestion": "Ensure the base image is the current official Alpine image to minimize size and maintain security. If not using Alpine, manually verify that the chosen base image is current and official."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BPB8CA77FB",
+      "title": "Pin base image versions",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Check if the FROM instruction specifies an image pinned by digest. (Expected pattern: '^\\s*FROM\\s+[\\w\\d.-]+(@sha256:[a-f0-9]{64})?(\\s+|$)')",
+      "suggestion": "Ensure the base image in the FROM instruction is pinned to a specific digest to guarantee reproducibility and avoid unexpected changes."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN instructions are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Detects if --no-install-recommends flag is used with apt-get install to minimize image size. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks for the use of || exit 1 to ensure the build fails if a command in the pipe fails. (Expected pattern: '^\\s*RUN\\s+.*\\|\\|\\s+exit\\s+1')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN instructions are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Detects if --no-install-recommends flag is used with apt-get install to minimize image size. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks for the use of || exit 1 to ensure the build fails if a command in the pipe fails. (Expected pattern: '^\\s*RUN\\s+.*\\|\\|\\s+exit\\s+1')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN instructions are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Detects if --no-install-recommends flag is used with apt-get install to minimize image size. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks for the use of || exit 1 to ensure the build fails if a command in the pipe fails. (Expected pattern: '^\\s*RUN\\s+.*\\|\\|\\s+exit\\s+1')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BPAF7FDF55",
+      "title": "Don't install unnecessary packages",
+      "severity": "MEDIUM",
+      "message": "Disallowed keyword(s) found ('vim', 'nano', 'emacs'). Checks for the presence of common text editors which are unnecessary in most Docker images.",
+      "suggestion": "Review the Dockerfile to ensure it only installs packages necessary for the application or service to run. Remove any packages that are used for convenience, debugging, or are otherwise unnecessary for the operation of the container."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN instructions are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Detects if --no-install-recommends flag is used with apt-get install to minimize image size. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks for the use of || exit 1 to ensure the build fails if a command in the pipe fails. (Expected pattern: '^\\s*RUN\\s+.*\\|\\|\\s+exit\\s+1')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN instructions are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Detects if --no-install-recommends flag is used with apt-get install to minimize image size. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks for the use of || exit 1 to ensure the build fails if a command in the pipe fails. (Expected pattern: '^\\s*RUN\\s+.*\\|\\|\\s+exit\\s+1')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN instructions are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Detects if --no-install-recommends flag is used with apt-get install to minimize image size. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks for the use of || exit 1 to ensure the build fails if a command in the pipe fails. (Expected pattern: '^\\s*RUN\\s+.*\\|\\|\\s+exit\\s+1')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN instructions are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Detects if --no-install-recommends flag is used with apt-get install to minimize image size. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks for the use of || exit 1 to ensure the build fails if a command in the pipe fails. (Expected pattern: '^\\s*RUN\\s+.*\\|\\|\\s+exit\\s+1')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN instructions are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Detects if --no-install-recommends flag is used with apt-get install to minimize image size. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks for the use of || exit 1 to ensure the build fails if a command in the pipe fails. (Expected pattern: '^\\s*RUN\\s+.*\\|\\|\\s+exit\\s+1')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path. (Expected pattern: '^\\s*WORKDIR\\s+\\/.*')",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd ... && do-something' with WORKDIR followed by the desired command without 'cd'."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form. (Expected pattern: '^CMD\\s+\\[\"(?:[^\"]+\",\\s*)+\"[^\"]+\"\\]')",
+      "suggestion": "Ensure CMD is used in the exec form, e.g., CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN instructions are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Detects if --no-install-recommends flag is used with apt-get install to minimize image size. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks for the use of || exit 1 to ensure the build fails if a command in the pipe fails. (Expected pattern: '^\\s*RUN\\s+.*\\|\\|\\s+exit\\s+1')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if EXPOSE uses common ports for well-known applications (80, 443 for web servers, 27017 for MongoDB). (Expected pattern: '^\\s*EXPOSE\\s+(?:80|443|27017)\\s*$')",
+      "suggestion": "Ensure the EXPOSE instruction specifies the common, traditional port for your application. If your application uses a well-known port (e.g., 80 for HTTP, 443 for HTTPS, 27017 for MongoDB), verify it is correctly exposed. For less common applications, manually verify the correct port is exposed according to the application's documentation."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if EXPOSE uses common ports for well-known applications (80, 443 for web servers, 27017 for MongoDB). (Expected pattern: '^\\s*EXPOSE\\s+(?:80|443|27017)\\s*$')",
+      "suggestion": "Ensure the EXPOSE instruction specifies the common, traditional port for your application. If your application uses a well-known port (e.g., 80 for HTTP, 443 for HTTPS, 27017 for MongoDB), verify it is correctly exposed. For less common applications, manually verify the correct port is exposed according to the application's documentation."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ENV is used to update the PATH environment variable. (Expected pattern: '^ENV\\s+PATH=.*$')",
+      "suggestion": "Use ENV to update the PATH environment variable for installed software to ensure commands work without specifying full paths. Consider using ENV for setting environment variables specific to services and for managing version numbers to simplify updates. To unset an environment variable, use a RUN command with shell commands to set, use, and unset the variable in a single layer for cleaner image layers."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks for the correct format of ENV instructions for setting environment variables. (Expected pattern: '^ENV\\s+[^=]+\\s*=\\s*[^\\s]+\\s*$')",
+      "suggestion": "Use ENV to update the PATH environment variable for installed software to ensure commands work without specifying full paths. Consider using ENV for setting environment variables specific to services and for managing version numbers to simplify updates. To unset an environment variable, use a RUN command with shell commands to set, use, and unset the variable in a single layer for cleaner image layers."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ENV is used to update the PATH environment variable. (Expected pattern: '^ENV\\s+PATH=.*$')",
+      "suggestion": "Use ENV to update the PATH environment variable for installed software to ensure commands work without specifying full paths. Consider using ENV for setting environment variables specific to services and for managing version numbers to simplify updates. To unset an environment variable, use a RUN command with shell commands to set, use, and unset the variable in a single layer for cleaner image layers."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks for the correct format of ENV instructions for setting environment variables. (Expected pattern: '^ENV\\s+[^=]+\\s*=\\s*[^\\s]+\\s*$')",
+      "suggestion": "Use ENV to update the PATH environment variable for installed software to ensure commands work without specifying full paths. Consider using ENV for setting environment variables specific to services and for managing version numbers to simplify updates. To unset an environment variable, use a RUN command with shell commands to set, use, and unset the variable in a single layer for cleaner image layers."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Disallowed pattern found: Detects usage of 'RUN cd' which should be replaced with WORKDIR.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd ... && do-something' with WORKDIR followed by the desired command without 'cd'."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Detects if --no-install-recommends flag is used with apt-get install to minimize image size. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks for the use of || exit 1 to ensure the build fails if a command in the pipe fails. (Expected pattern: '^\\s*RUN\\s+.*\\|\\|\\s+exit\\s+1')",
+      "suggestion": "Ensure that complex or long RUN instructions are split across multiple lines for readability. Always use apt-get update in combination with apt-get install in the same RUN instruction to avoid caching issues. Use the --no-install-recommends flag with apt-get install to minimize the image size. Consider using || exit 1 after pipe commands to ensure the build fails if any command in the pipe fails. Review the Dockerfile manually to ensure apt-get instructions are optimized for caching and do not leave the apt cache in the image layer."
+    }
+  ]
+}

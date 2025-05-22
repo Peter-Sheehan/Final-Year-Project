@@ -1,0 +1,3029 @@
+{
+  "dockerfile": "Dockerfile2",
+  "total_issues": 336,
+  "issues": [
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Manual review is required to ensure that ENV instructions are used efficiently and do not lead to unnecessary intermediate layers, especially when setting and unsetting variables within the same Dockerfile.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP29F91BA8",
+      "title": "Rebuild your images often",
+      "severity": "INFO",
+      "message": "Due to the linter's limitations, it cannot verify if images are being rebuilt often or if the --no-cache option is used during builds. This requires understanding of the build process and context beyond what is specified in the Dockerfile.",
+      "suggestion": "Ensure to rebuild your Docker images frequently to incorporate updated dependencies and base images. Consider using the --no-cache option during builds to avoid using cached layers and ensure a fresh download of dependencies and base images. Additionally, consider pinning your base image to a specific version to avoid unexpected changes."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP2AA02452",
+      "title": "Create ephemeral containers",
+      "severity": "MEDIUM",
+      "message": "This check requires manual review to ensure that the Dockerfile instructions do not create unnecessary dependencies or stateful components within the container, which would make it less ephemeral. For example, avoiding instructions that write data to the container filesystem in a way that is expected to persist across container restarts.",
+      "suggestion": "Ensure your Dockerfile creates containers that can be easily stopped, destroyed, and replaced, minimizing setup and configuration. Avoid writing data to the container's filesystem that needs to persist across restarts, and instead use external data stores or services for any stateful components."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Manual review required to ensure the base image is from a trusted source and is minimal for the application's requirements.",
+      "suggestion": "Avoid using the 'latest' tag for base images to ensure reproducibility. Consider using a minimal base image like 'scratch' or a specific version of an official image that suits your application's needs. Review your Dockerfile to ensure you're using a trusted and minimal base image for both development/build stages and a separate, slimmer image for production. Consider multi-stage builds to minimize the final image size."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Manual review required to verify if a multi-stage build is used, with a minimal image for the final stage.",
+      "suggestion": "Avoid using the 'latest' tag for base images to ensure reproducibility. Consider using a minimal base image like 'scratch' or a specific version of an official image that suits your application's needs. Review your Dockerfile to ensure you're using a trusted and minimal base image for both development/build stages and a separate, slimmer image for production. Consider multi-stage builds to minimize the final image size."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP496813AA",
+      "title": "Sort multi-line arguments",
+      "severity": "MEDIUM",
+      "message": "Due to the linter's limitations in understanding context across multiple lines and the complexity of verifying alphanumeric sorting of multi-line arguments, this check requires manual review.",
+      "suggestion": "Ensure that multi-line arguments, such as package lists in a RUN instruction, are sorted alphanumerically. This facilitates easier maintenance and review. Additionally, include a space before a backslash (\\) at the end of each line for better readability."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP4C08BC02",
+      "title": "ONBUILD",
+      "severity": "MEDIUM",
+      "message": "Manual review is required to ensure that images built with ONBUILD instructions have a separate tag, such as ruby:1.9-onbuild or ruby:2.0-onbuild, to mitigate potential build context issues and to follow best practices.",
+      "suggestion": "Avoid using ADD or COPY instructions directly in ONBUILD to prevent build failures due to missing resources. Consider adding a separate tag for images built with ONBUILD instructions to facilitate better version control and mitigate potential issues."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Determining if COPY is used appropriately for copying files from one stage to another in a multi-stage build requires understanding the Dockerfile's structure and context, which is beyond this linter's capabilities.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Due to the linter's limitations, it cannot verify if the exposed port matches the common, traditional port for the specific application being containerized. This requires manual review.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP5FE7DA5A",
+      "title": "Create reusable stages",
+      "severity": "MEDIUM",
+      "message": "Manual review is required to ensure that reusable stages are created for components shared across multiple images, as this cannot be determined by simple line-by-line analysis or without understanding the context of the Dockerfile's structure and the relationship between stages.",
+      "suggestion": "Consider organizing your Dockerfile to include a base stage that contains components shared across multiple images. Then, use this base stage as a starting point for other stages to avoid duplication and improve efficiency."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Manual review is required to ensure that a non-root user is created and used correctly without frequent switching back and forth between users.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP844BB562",
+      "title": "Use multi-stage builds",
+      "severity": "HIGH",
+      "message": "Manual review is required to ensure that each stage in a multi-stage build is used effectively, with unnecessary files not being copied to the final image.",
+      "suggestion": "Split your Dockerfile into multiple stages by using multiple FROM instructions. Each stage can use a different base image, or the same one with different build contexts. Ensure that only the necessary artifacts are moved to the final stage to keep the image size small."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP8E7F00CF",
+      "title": "FROM",
+      "severity": "HIGH",
+      "message": "Due to the linter's limitations, it cannot verify if an image is an official Docker image or assess the full context of image selection. Manual review is required to ensure the used base image is the current official version and to verify it's the most appropriate choice for the project's needs.",
+      "suggestion": "Use an official Alpine image as the base for your Dockerfile to minimize size and maintain security. Avoid using the 'latest' tag to ensure your builds are predictable and reproducible. For non-Alpine images, manually verify that you're using the official version and consider its appropriateness for your project."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BP9F076259",
+      "title": "Leverage build cache",
+      "severity": "MEDIUM",
+      "message": "Due to the linter's limitations, it cannot analyze the order of instructions or their implications on the Docker build cache. Optimizing Dockerfile instructions for cache utilization requires understanding the context and order of instructions, which must be manually reviewed.",
+      "suggestion": "Review Dockerfile instructions to ensure they are ordered in a way that maximizes the use of the Docker build cache. For example, instructions that are less likely to change should be placed before instructions that are more likely to change."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Due to the linter's limitations, it cannot verify if 'apt-get update' and 'apt-get install' are combined in the same RUN statement or if version pinning is used for package installation. These practices need to be manually reviewed.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: File '.dockerignore'",
+      "rule_id": "BPAEDF7F2F",
+      "title": "Exclude with .dockerignore",
+      "severity": "HIGH",
+      "message": "File '.dockerignore' check failed: File does not exist (required but not found). Check if a .dockerignore file exists in the same directory as the Dockerfile.",
+      "suggestion": "Create a .dockerignore file in the same directory as your Dockerfile to exclude files not relevant to the build. Follow patterns similar to .gitignore to specify which files or directories to ignore."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BPAF7FDF55",
+      "title": "Don't install unnecessary packages",
+      "severity": "MEDIUM",
+      "message": "Determining if a package is unnecessary requires understanding the application's architecture and the purpose of the image. This cannot be accurately determined with simple line-by-line checks or without context.",
+      "suggestion": "Review the list of packages being installed and remove any that are not directly required for your application or service to run. Consider using multi-stage builds to include only the necessary artifacts in your final image."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BPD5DA0774",
+      "title": "Build and test your images in CI",
+      "severity": "HIGH",
+      "message": "This check requires verifying if a CI/CD pipeline like GitHub Actions is configured to automatically build and test Docker images upon code commits or pull requests. Such verification goes beyond the capabilities of a simple line-by-line Dockerfile linter and involves external tooling and configuration checks.",
+      "suggestion": "Ensure your project's CI/CD pipeline (e.g., GitHub Actions, GitLab CI/CD) is configured to automatically build and test your Docker images whenever changes are pushed to your source control or when a pull request is made."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Manual review is required to ensure that VOLUME is used appropriately for exposing database storage areas, configuration storage, or files/folders created by the container, and not for other purposes that could compromise the container's security or efficiency.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Manual review is required to ensure that ENTRYPOINT is used to set the image's main command, allowing the image to be run as though it was that command, and CMD is used as the default flags. Also, to verify if ENTRYPOINT is used in combination with a helper script for complex setups.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 1,
+      "line_content": "Global Check: Manual Review",
+      "rule_id": "BPFE9F359F",
+      "title": "Decouple applications",
+      "severity": "HIGH",
+      "message": "Due to the linter's limitations, it cannot analyze the architectural decisions such as decoupling applications into multiple containers. This requires understanding the application's architecture and how different components interact, which goes beyond simple line-by-line analysis.",
+      "suggestion": "Consider breaking down your application into smaller, decoupled containers that each serve a single purpose or concern. This may involve creating separate containers for your application's web server, database, and cache components. Ensure these containers can communicate effectively through Docker container networks."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Disallowed pattern found: Using 'latest' tag for base image.",
+      "suggestion": "Avoid using the 'latest' tag for base images to ensure reproducibility. Consider using a minimal base image like 'scratch' or a specific version of an official image that suits your application's needs. Review your Dockerfile to ensure you're using a trusted and minimal base image for both development/build stages and a separate, slimmer image for production. Consider multi-stage builds to minimize the final image size."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies using 'scratch' for a minimal base.",
+      "suggestion": "Avoid using the 'latest' tag for base images to ensure reproducibility. Consider using a minimal base image like 'scratch' or a specific version of an official image that suits your application's needs. Review your Dockerfile to ensure you're using a trusted and minimal base image for both development/build stages and a separate, slimmer image for production. Consider multi-stage builds to minimize the final image size."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 1,
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP8E7F00CF",
+      "title": "FROM",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Check if the FROM instruction specifies an Alpine image, potentially with a tag.",
+      "suggestion": "Use an official Alpine image as the base for your Dockerfile to minimize size and maintain security. Avoid using the 'latest' tag to ensure your builds are predictable and reproducible. For non-Alpine images, manually verify that you're using the official version and consider its appropriateness for your project."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP8E7F00CF",
+      "title": "FROM",
+      "severity": "HIGH",
+      "message": "Disallowed pattern found: Using 'latest' tag for base image.",
+      "suggestion": "Use an official Alpine image as the base for your Dockerfile to minimize size and maintain security. Avoid using the 'latest' tag to ensure your builds are predictable and reproducible. For non-Alpine images, manually verify that you're using the official version and consider its appropriateness for your project."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BPB8CA77FB",
+      "title": "Pin base image versions",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Check if the FROM instruction specifies an image pinned by digest.",
+      "suggestion": "Ensure that the base image in your Dockerfile is pinned to a specific digest to guarantee reproducibility and avoid unintended updates. For example, use `FROM alpine@sha256:1234567890abcdef...` instead of `FROM alpine:latest` or `FROM alpine:3.19`."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies using 'scratch' for a minimal base.",
+      "suggestion": "Avoid using the 'latest' tag for base images to ensure reproducibility. Consider using a minimal base image like 'scratch' or a specific version of an official image that suits your application's needs. Review your Dockerfile to ensure you're using a trusted and minimal base image for both development/build stages and a separate, slimmer image for production. Consider multi-stage builds to minimize the final image size."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP8E7F00CF",
+      "title": "FROM",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Check if the FROM instruction specifies an Alpine image, potentially with a tag.",
+      "suggestion": "Use an official Alpine image as the base for your Dockerfile to minimize size and maintain security. Avoid using the 'latest' tag to ensure your builds are predictable and reproducible. For non-Alpine images, manually verify that you're using the official version and consider its appropriateness for your project."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BPB8CA77FB",
+      "title": "Pin base image versions",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Check if the FROM instruction specifies an image pinned by digest.",
+      "suggestion": "Ensure that the base image in your Dockerfile is pinned to a specific digest to guarantee reproducibility and avoid unintended updates. For example, use `FROM alpine@sha256:1234567890abcdef...` instead of `FROM alpine:latest` or `FROM alpine:3.19`."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Disallowed pattern found: Checks if ADD is used, suggesting COPY might be more appropriate unless for specific ADD use cases.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 9,
+      "line_content": "ADD . /app",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 19,
+      "line_content": "COPY .git /app/.git",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 20,
+      "line_content": "COPY README.md /app/",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 21,
+      "line_content": "COPY node_modules /app/node_modules",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 23,
+      "line_content": "CMD [\"sh\", \"-c\", \"nginx & python3 app.py\"]",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 28,
+      "line_content": "EXPOSE 80",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 28,
+      "line_content": "EXPOSE 80",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 28,
+      "line_content": "EXPOSE 80",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 28,
+      "line_content": "EXPOSE 80",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 28,
+      "line_content": "EXPOSE 80",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 28,
+      "line_content": "EXPOSE 80",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 28,
+      "line_content": "EXPOSE 80",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 28,
+      "line_content": "EXPOSE 80",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 28,
+      "line_content": "EXPOSE 80",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 28,
+      "line_content": "EXPOSE 80",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 28,
+      "line_content": "EXPOSE 80",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 28,
+      "line_content": "EXPOSE 80",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Disallowed pattern found: Checks for 'RUN cd' which should be replaced with WORKDIR.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to update the PATH environment variable.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the ENV instruction is used to set environment variables.",
+      "suggestion": "Use ENV to set environment variables and update the PATH to facilitate software execution. Avoid creating unnecessary layers by combining ENV instructions where possible. For setting and unsetting environment variables within the same layer, consider using a RUN instruction with shell commands."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BP08E4DA4E",
+      "title": "CMD",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if CMD is used in the exec form with parameters.",
+      "suggestion": "Ensure that CMD is used in the exec form, such as CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for downloading files from remote HTTP/HTTPS URLs.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BP4F995E92",
+      "title": "ADD or COPY",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ADD is used for adding tar files which will be auto-extracted.",
+      "suggestion": "Prefer using COPY for copying local files. Use ADD only for its unique features like adding files from remote URLs and auto-extracting tar files."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if the EXPOSE instruction is used with a valid port format.",
+      "suggestion": "Ensure you are using the EXPOSE instruction to indicate the common, traditional port for your application. For example, use EXPOSE 80 for Apache web server images, and EXPOSE 27017 for MongoDB images. This facilitates easier understanding and management of container networking."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BP6EB0C612",
+      "title": "USER",
+      "severity": "HIGH",
+      "message": "Required keyword(s) ('USER') not found. Ensure that the USER instruction is used to specify a non-root user.",
+      "suggestion": "Ensure that your Dockerfile specifies a non-root user for running the service by using the USER instruction. Avoid using 'sudo' due to its unpredictable behavior. If necessary, consider alternatives like 'gosu' for privilege escalation. Also, avoid frequently switching users to reduce complexity and potential security risks."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if WORKDIR uses an absolute path.",
+      "suggestion": "Use WORKDIR with absolute paths to set the working directory. Replace any 'RUN cd' commands with WORKDIR instructions for better readability and maintainability."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands use '&&' to chain commands together.",
+      "suggestion": "Ensure complex or long RUN commands are split across multiple lines for readability. Use backslashes to continue commands on a new line and chain commands with '&&'. For package installations, always combine 'apt-get update' with 'apt-get install' in the same RUN statement to avoid caching issues. Consider using version pinning for packages to ensure the build retrieves a specific version."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BPDE4F1AAB",
+      "title": "VOLUME",
+      "severity": "MEDIUM",
+      "message": "Required keyword(s) ('VOLUME') not found. Check if the VOLUME instruction is used at least once.",
+      "suggestion": "Ensure that your Dockerfile includes at least one VOLUME instruction to expose mutable or user-serviceable parts of your image, such as database storage areas or configuration files. Review the Dockerfile reference for the VOLUME instruction for more details."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the ENTRYPOINT instruction is used.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    },
+    {
+      "line_number": 35,
+      "line_content": "    mkdir temp ",
+      "rule_id": "BPFAEF57A2",
+      "title": "ENTRYPOINT",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the CMD instruction is used, which should ideally be used in conjunction with ENTRYPOINT to provide default arguments.",
+      "suggestion": "Ensure that ENTRYPOINT is used to set the main command of the image, allowing it to be run as if it was that command. Use CMD to provide default flags. Consider using a helper script with ENTRYPOINT for complex setups."
+    }
+  ]
+}

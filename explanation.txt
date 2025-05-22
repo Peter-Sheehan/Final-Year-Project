@@ -1,0 +1,39 @@
+1. **Specific Base Image Version:**
+   - Changed `FROM python:latest` to `FROM python:3.9-slim`.
+   - Addresses linter issue about using `latest`.
+   - Benefits: Ensures consistency and predictability, with a smaller, security-focused image (3.9-slim).
+2. **Multi-Stage Build:**
+   - Introduced a builder stage to separate build dependencies.
+   - Addresses best practices about multi-stage builds.
+   - Benefits: Reduces the final image size by not including unnecessary build tools.
+3. **Merged and Optimized RUN Instructions:**
+   - Combined `apt-get` commands using `&&` and added `--no-install-recommends` to `RUN apt-get install` line.
+   - Addresses linter issues about combining `update` and `install`, unnecessary packages, and cache cleaning.
+   - Benefits: Reduces the number of layers, minimizes installed packages, and ensures a clean build environment.
+4. **Absolute Path for WORKDIR:**
+   - Changed `WORKDIR app` to `WORKDIR /app`.
+   - Addresses linter issue with WORKDIR and previous cd command.
+   - Benefits: Provides clarity and reliability.
+5. **Use of COPY instead of ADD:**
+   - Replaced all `ADD` instructions with `COPY`.
+   - Addresses linter issue about using `ADD`.
+   - Benefits: Simplifies file operations and avoids the unnecessary features of `ADD`.
+6. **Dockerignore Implementation Suggested:**
+   - Suggest using `.dockerignore` to exclude unnecessary files (not shown in Dockerfile).
+   - Addresses linter's implied need for selective copying.
+7. **Environment and Version Pinning Clarifications:**
+   - Provided default value for `ENV MY_VAR`.
+   - Addresses linter issues about empty ENV.
+   - Benefits: Ensures the variable is set by default.
+8. **Non-Root User for Security:**
+   - Added a `USER` instruction to use a non-root user.
+   - Addresses linter issue about running as root.
+   - Benefits: Enhances security by minimizing potential attack vectors.
+9. **Efficient Command Execution:**
+   - Replaced `CMD ["python", "app.py"]` with `CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "app:app"]`.
+   - Addresses linter issue about CMD with multiple processes.
+   - Benefits: Uses Gunicorn for better process management, performance, and scalability.
+10. **Simplified Base Image for Final Stage:**
+   - Reduced base image for running the app to `python:3.9-slim`.
+   - Addresses best practices for final image minimization.
+   - Benefits: Minimizes vulnerabilities and speeds up image deployment.

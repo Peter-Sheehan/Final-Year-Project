@@ -1,0 +1,358 @@
+{
+  "dockerfile": "Dockerfile2",
+  "total_issues": 58,
+  "issues": [
+   
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies 'scratch' for minimal base image. (Expected pattern: '^\\s*FROM\\s+scratch$')",
+      "suggestion": "Choose a minimal base image like 'scratch' or 'alpine' for your Dockerfile to minimize vulnerabilities and ensure it's from a trusted source. Avoid using the ':latest' tag to prevent unexpected changes. Consider manual review to ensure the base image is appropriate for the application's stage of development and security requirements."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction uses 'alpine' for a minimal base image. (Expected pattern: '^\\s*FROM\\s+alpine')",
+      "suggestion": "Choose a minimal base image like 'scratch' or 'alpine' for your Dockerfile to minimize vulnerabilities and ensure it's from a trusted source. Avoid using the ':latest' tag to prevent unexpected changes. Consider manual review to ensure the base image is appropriate for the application's stage of development and security requirements."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Disallowed pattern found: Using 'latest' tag for base image.",
+      "suggestion": "Choose a minimal base image like 'scratch' or 'alpine' for your Dockerfile to minimize vulnerabilities and ensure it's from a trusted source. Avoid using the ':latest' tag to prevent unexpected changes. Consider manual review to ensure the base image is appropriate for the application's stage of development and security requirements."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP4C08BC02",
+      "title": "ONBUILD",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies an image with an '-onbuild' tag. (Expected pattern: '^\\s*FROM\\s+[^\\s]+-onbuild\\b')",
+      "suggestion": "Ensure that images intended for use as a base with ONBUILD instructions have an '-onbuild' tag in their FROM line. Verify manually that ONBUILD instructions are used correctly and that child Dockerfiles are prepared for these triggers."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP8E7F00CF",
+      "title": "FROM",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies an Alpine image, potentially with a version tag. (Expected pattern: '^\\s*FROM\\s+alpine(:[\\w.-]+)?\\s*(#.*)?$')",
+      "suggestion": "Use an official Alpine image as the base for your Dockerfile to minimize size and ensure security. Avoid using the 'latest' tag to make builds more predictable."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BP8E7F00CF",
+      "title": "FROM",
+      "severity": "HIGH",
+      "message": "Disallowed pattern found: Detects usage of the 'latest' tag which should be avoided for more predictable builds.",
+      "suggestion": "Use an official Alpine image as the base for your Dockerfile to minimize size and ensure security. Avoid using the 'latest' tag to make builds more predictable."
+    },
+    {
+      "line_number": 1,
+      "line_content": "FROM ubuntu:latest",
+      "rule_id": "BPB8CA77FB",
+      "title": "Pin base image versions",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Check if the FROM instruction specifies an image pinned by digest. (Expected pattern: '^\\s*FROM\\s+[\\w\\d.-]+(@sha256:[a-f0-9]{64})\\s*(?:\\s+|$)')",
+      "suggestion": "Ensure that the base image in the FROM instruction is pinned to a specific digest to guarantee reproducibility and avoid unexpected changes."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies 'scratch' for minimal base image. (Expected pattern: '^\\s*FROM\\s+scratch$')",
+      "suggestion": "Choose a minimal base image like 'scratch' or 'alpine' for your Dockerfile to minimize vulnerabilities and ensure it's from a trusted source. Avoid using the ':latest' tag to prevent unexpected changes. Consider manual review to ensure the base image is appropriate for the application's stage of development and security requirements."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP32CAE590",
+      "title": "Choose the right base image",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction uses 'alpine' for a minimal base image. (Expected pattern: '^\\s*FROM\\s+alpine')",
+      "suggestion": "Choose a minimal base image like 'scratch' or 'alpine' for your Dockerfile to minimize vulnerabilities and ensure it's from a trusted source. Avoid using the ':latest' tag to prevent unexpected changes. Consider manual review to ensure the base image is appropriate for the application's stage of development and security requirements."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP4C08BC02",
+      "title": "ONBUILD",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies an image with an '-onbuild' tag. (Expected pattern: '^\\s*FROM\\s+[^\\s]+-onbuild\\b')",
+      "suggestion": "Ensure that images intended for use as a base with ONBUILD instructions have an '-onbuild' tag in their FROM line. Verify manually that ONBUILD instructions are used correctly and that child Dockerfiles are prepared for these triggers."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BP8E7F00CF",
+      "title": "FROM",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Checks if the FROM instruction specifies an Alpine image, potentially with a version tag. (Expected pattern: '^\\s*FROM\\s+alpine(:[\\w.-]+)?\\s*(#.*)?$')",
+      "suggestion": "Use an official Alpine image as the base for your Dockerfile to minimize size and ensure security. Avoid using the 'latest' tag to make builds more predictable."
+    },
+    {
+      "line_number": 2,
+      "line_content": "FROM python:3.9 AS builder",
+      "rule_id": "BPB8CA77FB",
+      "title": "Pin base image versions",
+      "severity": "HIGH",
+      "message": "Required pattern not found: Check if the FROM instruction specifies an image pinned by digest. (Expected pattern: '^\\s*FROM\\s+[\\w\\d.-]+(@sha256:[a-f0-9]{64})\\s*(?:\\s+|$)')",
+      "suggestion": "Ensure that the base image in the FROM instruction is pinned to a specific digest to guarantee reproducibility and avoid unexpected changes."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 4,
+      "line_content": "RUN apt-get update",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Ensures apt-get install commands include the --no-install-recommends flag. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 5,
+      "line_content": "RUN apt-get install -y python3",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Ensures apt-get install commands include the --no-install-recommends flag. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Ensures apt-get install commands include the --no-install-recommends flag. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 6,
+      "line_content": "RUN apt-get install -y vim nano curl wget",
+      "rule_id": "BPAF7FDF55",
+      "title": "Don't install unnecessary packages",
+      "severity": "MEDIUM",
+      "message": "Disallowed keyword(s) found ('vim', 'nano', 'emacs'). Checks for the installation of common text editors which are usually unnecessary in production images.",
+      "suggestion": "Review the Dockerfile to ensure only necessary packages are installed. Consider using multi-stage builds to include tools needed for building your application but not required in the final image."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 7,
+      "line_content": "RUN apt-get install -y nginx",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Ensures apt-get install commands include the --no-install-recommends flag. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 10,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Ensures apt-get install commands include the --no-install-recommends flag. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 12,
+      "line_content": "RUN apt-get install -y postgresql",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Ensures apt-get install commands include the --no-install-recommends flag. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 14,
+      "line_content": "RUN mkdir -p /var/log/myapp",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Ensures apt-get install commands include the --no-install-recommends flag. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 15,
+      "line_content": "RUN echo \"log data\" > /var/log/app.log",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Ensures apt-get install commands include the --no-install-recommends flag. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 17,
+      "line_content": "WORKDIR app",
+      "rule_id": "BP9166D7E9",
+      "title": "WORKDIR",
+      "severity": "HIGH",
+      "message": "Disallowed pattern found: Detects WORKDIR using a relative path.",
+      "suggestion": "Use absolute paths when setting the WORKDIR. For example, use WORKDIR /app instead of WORKDIR app."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if RUN commands are split across multiple lines using backslashes for readability. (Expected pattern: '^\\s*RUN\\s+.*\\\\$')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 25,
+      "line_content": "RUN apt-get install -y redis-server",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Ensures apt-get install commands include the --no-install-recommends flag. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    },
+    {
+      "line_number": 27,
+      "line_content": "EXPOSE 22",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if EXPOSE uses common ports (80, 443 for web servers, 27017 for MongoDB). (Expected pattern: '^\\s*EXPOSE\\s+(80|443|27017)\\s*$')",
+      "suggestion": "Ensure the EXPOSE instruction uses a common, traditional port for the application it serves. For example, use 'EXPOSE 80' for Apache web server images, 'EXPOSE 27017' for MongoDB images."
+    },
+    {
+      "line_number": 29,
+      "line_content": "EXPOSE 3389",
+      "rule_id": "BP4FB971F0",
+      "title": "EXPOSE",
+      "severity": "INFO",
+      "message": "Required pattern not found: Checks if EXPOSE uses common ports (80, 443 for web servers, 27017 for MongoDB). (Expected pattern: '^\\s*EXPOSE\\s+(80|443|27017)\\s*$')",
+      "suggestion": "Ensure the EXPOSE instruction uses a common, traditional port for the application it serves. For example, use 'EXPOSE 80' for Apache web server images, 'EXPOSE 27017' for MongoDB images."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ENV is used to correctly prepend to the PATH environment variable. (Expected pattern: '^\\s*ENV\\s+PATH=.+?:\\$PATH')",
+      "suggestion": "Use ENV to prepend directories to the PATH environment variable to ensure software runs without specifying full paths. Also, use ENV to define necessary environment variables for services and to manage software versions easily. Avoid setting environment variables that should be unset later; instead, use RUN for temporary environment variable changes."
+    },
+    {
+      "line_number": 31,
+      "line_content": "ENV DEBUG=",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Ensures ENV is used to set environment variables. (Expected pattern: '^\\s*ENV\\s+\\w+=.+')",
+      "suggestion": "Use ENV to prepend directories to the PATH environment variable to ensure software runs without specifying full paths. Also, use ENV to define necessary environment variables for services and to manage software versions easily. Avoid setting environment variables that should be unset later; instead, use RUN for temporary environment variable changes."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Checks if ENV is used to correctly prepend to the PATH environment variable. (Expected pattern: '^\\s*ENV\\s+PATH=.+?:\\$PATH')",
+      "suggestion": "Use ENV to prepend directories to the PATH environment variable to ensure software runs without specifying full paths. Also, use ENV to define necessary environment variables for services and to manage software versions easily. Avoid setting environment variables that should be unset later; instead, use RUN for temporary environment variable changes."
+    },
+    {
+      "line_number": 32,
+      "line_content": "ENV APP_VERSION",
+      "rule_id": "BP086BFB42",
+      "title": "ENV",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Ensures ENV is used to set environment variables. (Expected pattern: '^\\s*ENV\\s+\\w+=.+')",
+      "suggestion": "Use ENV to prepend directories to the PATH environment variable to ensure software runs without specifying full paths. Also, use ENV to define necessary environment variables for services and to manage software versions easily. Avoid setting environment variables that should be unset later; instead, use RUN for temporary environment variable changes."
+    },
+    {
+      "line_number": 34,
+      "line_content": "RUN cd /app && \\",
+      "rule_id": "BPAD173E04",
+      "title": "RUN",
+      "severity": "MEDIUM",
+      "message": "Required pattern not found: Ensures apt-get install commands include the --no-install-recommends flag. (Expected pattern: '^\\s*RUN\\s+.*--no-install-recommends')",
+      "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+    }
+  ]
+}

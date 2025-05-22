@@ -1,21 +1,38 @@
 {
   "name": "docker-linter",
-  "displayName": "Docker Linter",
-  "description": "",
-  "version": "0.0.1",
+  "displayName": "Dockerfile Linter",
+  "description": "Real-time Dockerfile linting with best practice checks",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.96.0"
   },
   "categories": [
-    "Other"
+    "Linters"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:dockerfile"
+  ],
   "main": "./extension.js",
   "contributes": {
     "commands": [{
-      "command": "docker-linter.helloWorld",
-      "title": "Hello World"
-    }]
+      "command": "docker-linter.runLint",
+      "title": "Lint Dockerfile"
+    }],
+    "configuration": {
+      "title": "Docker Linter",
+      "properties": {
+        "dockerLinter.severityLevels": {
+          "type": "object",
+          "default": {
+            "CRITICAL": "error",
+            "HIGH": "error", 
+            "MEDIUM": "warning",
+            "LOW": "information"
+          },
+          "description": "Configure severity level mappings"
+        }
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",

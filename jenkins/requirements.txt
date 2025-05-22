@@ -1,0 +1,8 @@
+docker
+rich
+openai
+python-dotenv
+click
+PyGithub
+PyYAML
+requests

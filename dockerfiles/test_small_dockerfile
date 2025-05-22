@@ -1,0 +1,14 @@
+FROM python:3.9
+
+# Small inefficiency: separate RUN commands
+RUN pip install flask
+RUN pip install requests
+
+# Small inefficiency: not using WORKDIR
+RUN mkdir -p /app
+COPY . /app
+
+# Small inefficiency: not specifying a user
+CMD ["python", "/app/app.py"]
+
+EXPOSE 5000 

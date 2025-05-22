@@ -1,0 +1,62 @@
+\chapter{Problem - Enhancing Dockerfile Quality and Security through Advanced Linting}
+\label{chap:problem}
+\lhead{\emph{Problem Statement}}
+The key question to be addressed in this chapter is: "What do I want to achieve".
+
+This chapter outlines the problem of maintaining high-quality, secure, and efficient Dockerfiles, defines the objectives of the project, and lists the functional requirements necessary to meet these objectives.
+
+\section{Problem Definition}
+One of the key technologies in modern software development is containerization, and one of the most popular platforms for that is Docker. It allows developers to package their applications and all their dependencies into lightweight, portable containers that make it easier for them to deploy consistently across diverse environments.
+
+Dockerfiles are at the foundation of building Docker images and therefore have a great impact on the efficiency, security, and maintainability of containerized applications. Despite their simplicity, they are often misconfigured, bringing in "Docker smells" that reduce system performance and security. Wu et al. present an empirical analysis on the occurrence of Dockerfile "smells" within 6,334 open source projects. Interestingly, they revealed that more than 84\% of the studied Dockerfiles contain at least one smell ranging from unpinned dependencies, inefficient layering practice that results in bloated images and extended build times.\cite{CharacterizingtheOccurrenceofDockerfile}\\Examples of these "smells" include:
+\begin{enumerate}
+    \item \textbf{Unpinned Dependencies:}\\Not locking down the exact versions of base images or software packages in Dockerfiles makes your builds unpredictable because they can pull in newer, potentially buggy, or insecure versions of software without you realizing it. Rizel et al. found this issue to be widespread in their analysis of a massive data set, highlighting how it can lead to inconsistent results and security risks, such as inadvertently using a vulnerable version of a package\cite{CharacterizingtheOccurrenceofDockerfile}.Pinning versions ensures that every time you build, you get the same reliable and secure software, minimizing surprises and vulnerabilities.
+    \item \textbf{Excessive Privilege:}\\By default, Docker containers often run with root privileges,If an attacker compromises a container running as root, they can potentially take over the host system or other containers. Ksontini et al. highlighted this as a serious security flaw that can lead to privilege escalation attacks\cite{ksontini2021refactorings}.The simple fix is to Run containers with the least privilege necessary, reducing the damage an attacker can do if they get in.
+    \item \textbf{Redundant Layers:}\\Every time a \verb|RUN|  instruction is used in a Dockerfile, it adds a new layer to the final image. If these instructions aren’t optimized, you end up with a bloated image, like carrying a backpack full of unnecessary items. This not only increases storage needs but also slows down deployments and consumes more bandwidth. Rizel et al. pointed out how this inefficiency can hurt performance and waste resources\cite{CharacterizingtheOccurrenceofDockerfile}.Streamlining your \verb|RUN| commands by combining them where possible helps create a leaner and faster image.
+\end{enumerate}
+
+These problems not only reduce the performance and security of individual containers but also pose significant risks to large-scale deployments. The manual effort required to identify and address "Docker smells" further worsen these issues, as manual reviews and quality checks are time-consuming and prone to human error.
+
+While tools like Hadolint and Snyk tackle parts of the Dockerfile quality and container security puzzle, they don’t offer a complete solution. Rizel et al. note that Hadolint is great for spotting basic Dockerfile mistakes through static analysis, but it doesn’t provide detailed recommendations or real-time help as developers code\cite{CharacterizingtheOccurrenceofDockerfile}. Snyk, meanwhile, excels at finding vulnerabilities in container images and dependencies but doesn’t do much when it comes to issues specific to Dockerfiles.
+
+This project aims to fill that gap by creating a unified tool that provides real-time feedback, detects Dockerfile issues (or "smells"), and offers clear, actionable fixes. Wu et al. emphasize that developers need tools that don’t just flag problems but also explain them and guide the user to resolve them\cite{CharacterizingtheOccurrenceofDockerfile}. By doing this, the Docker Linter aims to improve the security, efficiency, and quality of Dockerfiles, making containerized applications more reliable and easier to maintain.
+
+Additionally, as Ksontini et al. suggest, automating fixes can help developers avoid accumulating technical debt and speed up their workflow\cite{ksontini2021refactorings}. The Docker Linter will include advanced features like automated refactoring to ensure developers spend less time fixing issues and more time building great applications.
+
+
+\section{Objectives}
+The primary objectives of this project revolve around creating a comprehensive solution to address the quality and security challenges inherent in Dockerfiles. Each objective is designed to fill gaps identified in existing tools and align with best practices for Dockerfile management.\\These are:
+\begin{enumerate}
+    \item \textbf{Automate Detection of "Docker Smells"}\\"Docker Smells" are common patterns of misconfigurations and inefficiencies that can impact a container's performance and security. This Project aims to automate the detection of these "smells",providing developers with instant feedback during development of Dockerfiles.Unlike existing static analysis tools like snyk that needs to be run manually,this Docker linter will continuously monitor the development of Dockerfiles as it can be integrated into an IDE as an extension.It will highlight "Docker smells" like unpinned dependencies, redundant layers and excessive privileges which aligns with the findings of Wu et al \cite{CharacterizingtheOccurrenceofDockerfile}, who emphasises the prevalence and impact of these "smells". 
+
+    \item \textbf{Enhance Security in Dockerfiles}\\Security remains a critical concern in containerised environments especially since 79\% chose Docker as their container technology in 2020 \cite{CharacterizingtheOccurrenceofDockerfile}.Dockerfile often include practices that unintentionally increase the attack surface, such as running a container as root and exposing unnecessary ports.This project will check for these security vulnerability within the linting process, identifying misconfigurations and providing recommended code changes.Ksontini et al, highlights the importance of automated security checks particularly in environments where manual oversight is limited \cite{ksontini2021refactorings}.By incorporating these checks,the Docker linter will help organisations maintain a secure containerized infrastructure, reducing the likelihood of breaches and ensuring compliance with security best practices.
+
+    \item \textbf{Optimise CI/CD Pipelines}\\As organisations move towards the adoption of DevOps and agile development approaches,the increasing popularity of containerised Continuous Integration and Continuous Deployment pipelines have become essential in software development workflow.\cite{DevSecOpsCI/CDPipeline}.Ensuring that Dockerfiles meet quality and security standards before images are built is crucial for maintaining reliable and efficient pipelines.The Project will integrate the Docker Linter within CI/CD tools like Jenkins and GitHub to ensure managers and developers can check if Dockerfiles meet the industry's best practices.By identifying and resolving Dockerfiles early in the pipeline,the Docker Linter will prevent flawed Dockerfiles from progressing into the later stages,reducing the risk of deployment failures. This aligns with the findings of Ksontini et al., who emphasize the critical role of automated quality checks in maintaining the efficiency and reliability of CI/CD workflows. 
+
+    \item \textbf{Prioritize Issues and Generate Comprehensive Quality Reports}\\Not all Dockerfile issues carry the same level of urgency or impact. Some, like unpinned dependencies and running containers as root, represent significant security risks and should be addressed immediately, while others, such as redundant whitespace, have minimal impact on performance or security. To ensure developers focus their efforts effectively, this project will implement a severity-based ranking system. This system will prioritize issues based on their potential impact, guiding developers to address critical problems first. For instance, high-severity issues like exposed ports or unpinned dependencies will be flagged as top priorities, while less critical inefficiencies will be ranked lower.
+    \\The Docker Linter will generate comprehensive quality reports for organizations. These reports will summarize key measures such as the prevalence of "Docker smells" and identified security risks(ranked by severity). .
+
+\end{enumerate}
+
+\section{Functional Requirements}
+The following functional requirements define the key capabilities and features that the proposed Docker Linter must provide to address the challenges of Dockerfile quality and security: 
+\begin{enumerate}
+    \item \textbf{Real-Time Dockerfile Analysis:}\\The tool must analyse Dockerfiles in real-time as they are written, identifying common issues and providing instant feedback to developers within their ID
+    \item \textbf{Smell Detection and Categorization:}\\The Docker Linter should detect and categorize "Docker smells", such as unpinned dependencies, redundant layers, and deprecated instructions, highlighting their impact on performance, security, and maintainability.
+    \item \textbf{IDE Integration:}\\Seamless integration with Visual Studio Code is required to ensure that developers receive contextual recommendations directly within their workflow.
+    \item \textbf{CI/CD Pipeline Compatibility:}\\The tool must integrate with CI/CD platforms like Jenkins, and GitHub Actions to enforce quality checks during automated builds and deployments.
+    \item \textbf{Prioritized Issue Reporting:}\\Issues detected by the Docker Linter should be ranked based on their severity and impact, helping developers focus on resolving the most critical problems first.
+    \item \textbf{Comprehensive Quality Reports:}\\The tool should generate detailed reports summarizing Dockerfile quality metrics, including the prevalence of "smells" and identified security risks. These reports should seamlessly integrate with CI/CD tools like Jenkins,and GitHub Actions providing actionable insights to help organizations monitor their Docker practices.
+\end{enumerate}
+
+\section{Non-Functional Requirements}
+we now define the non-functional requirements that broadly describe how the system will operate:
+\begin{enumerate}
+    \item \textbf{Platform-Agnostic:}\\The Docker Linter should be platform-agnostic, working seamlessly across different operating systems and environments, including Linux, Windows and MacOS.
+    \item \textbf{Performance Efficiency:}\\The linter must provide real-time feedback with minimal latency to ensure a smooth developer experience without disrupting the workflow.
+    \item \textbf{Security Compliance:}\\All data handled by the tool should comply with relevant security standards, such as GDPR, to ensure user privacy and secure handling of sensitive data.
+    \item \textbf{Error Reporting:}\\The tool should use standard HTTP codes to indicate operation success or failure when interacting with CI/CD pipelines or external APIs.
+    \item \textbf{Continuous Monitoring:}\\The tool should support periodic or on-demand scans to track Dockerfile quality, ensuring that best practices are maintained throughout the lifecycle.
+    \item \textbf{Customization and Extensibility:}\\The linter should allow users to define custom rules and extend its capabilities to accommodate specific organizational policies or unique project requirements.
+\end{enumerate}
+

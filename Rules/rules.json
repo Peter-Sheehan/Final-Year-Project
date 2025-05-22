@@ -1,0 +1,128 @@
+[
+    {
+        "title": "Use multi-stage builds",
+        "category": "Base Image Selection & Versioning",
+        "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+        "regex_pattern": "(?i)^\\s*FROM\\s+[\\w\\-]+(:[\\w\\.\\-]+)?\\s+(?i:as)\\s+\\w+$",
+        "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+    },
+    {
+        "title": "Choose the right base image",
+        "category": "Base Image Selection & Versioning",
+        "description": "Use trusted base images with minimal dependencies to enhance security and reduce image size.",
+        "regex_pattern": "(?i)^\\s*FROM\\s+(alpine|debian|ubuntu|centos|node|python|golang|openjdk|rust):[0-9]+(\\.[0-9]+)*$",
+        "suggestion": "Use an official and minimal base image for better security and performance."
+    },
+    {
+        "title": "Prevent running as root user",
+        "category": "Security Best Practices",
+        "description": "Running as root inside a container is a security risk. Use a non-root user instead.",
+        "regex_pattern": "(?i)^\\s*USER\\s+root",
+        "suggestion": "Use a non-root user for better security (e.g., 'USER myuser')."
+    },
+    {
+        "title": "Use USER Instruction and specify a non root user",
+        "category": "Security Best Practices",
+        "description": "No USER instruction found in Dockerfile. Running containers as root is a security risk.",
+        "regex_pattern": "(?i)^\\s*USER\\s+root\\b",
+        "suggestion": "Add a USER instruction with a non-root user (e.g., 'USER myapp')."
+    },
+    {
+        "title": "Combine multiple RUN commands",
+        "category": "Build Optimization",
+        "description": "Combining RUN commands reduces the number of layers and optimizes caching.",
+        "regex_pattern": "(?i)^\\s*RUN\\s+.+\\nRUN\\s+",
+        "suggestion": "Combine multiple RUN commands using '&&' to reduce image layers."
+    },
+    {
+        "title": "Use COPY instead of ADD",
+        "category": "Maintainability",
+        "description": "'ADD' has extra functionality like auto-extracting tar files, which is often unnecessary and can cause unexpected behavior.",
+        "regex_pattern": "(?i)^\\s*ADD\\s+",
+        "suggestion": "Use 'COPY' instead of 'ADD' unless remote file download or auto-extraction is required."
+    },
+    {
+        "title": "Pin package versions",
+        "category": "Dependency Management",
+        "description": "Pinning package versions ensures that builds remain consistent.",
+        "regex_pattern": "(?i)RUN\\s+apt-get\\s+install\\s+-y\\s+[\\w-]+(=\\d+(\\.\\d+)*)?",
+        "suggestion": "Specify exact package versions instead of relying on the latest available version."
+    },
+    {
+        "title": "Use .dockerignore to exclude unnecessary files",
+        "category": "CI/CD & Best Practices",
+        "description": "Excluding unnecessary files from the build context improves build speed and reduces image size.",
+        "regex_pattern": "(?i)^\\s*COPY\\s+.+(\\.git|\\.log|\\.md|node_modules|\\.DS_Store)\\b",
+        "suggestion": "Use a .dockerignore file to exclude unnecessary files from the build context."
+    },
+    {
+        "title": "Avoid using latest tag",
+        "category": "Base Image Selection & Versioning",
+        "description": "Using 'latest' can lead to non-reproducible builds.",
+        "regex_pattern": "(?i)^\\s*FROM\\s+[\\w\\-]+:latest\\b",
+        "suggestion": "Use a specific version tag (e.g., 'FROM ubuntu:22.04')."
+    },
+    {
+        "title": "Pin base image by digest",
+        "category": "Base Image Selection & Versioning",
+        "description": "Pinning base image with a digest ensures consistent, reproducible builds and supply chain integrity.",
+        "regex_pattern": "(?i)^\\s*FROM\\s+[^\\s]+@sha256:[0-9a-f]{64}",
+        "suggestion": "Use FROM <image>:<tag>@sha256:<digest> for reproducible builds."
+    },
+    {
+        "title": "Avoid apt-get update alone",
+        "category": "Build Optimization",
+        "description": "Running apt-get update in a separate layer without install can lead to stale caches.",
+        "regex_pattern": "(?i)^\\s*RUN\\s+apt-get\\s+update\\s*(&&|;)?\\s*$",
+        "suggestion": "Combine 'apt-get update' and 'apt-get install' in a single RUN instruction."
+    },
+    {
+        "title": "Use apt-get install --no-install-recommends",
+        "category": "Build Optimization",
+        "description": "Minimize image size by avoiding installing recommended extra packages.",
+        "regex_pattern": "(?i)^\\s*RUN\\s+apt-get\\s+install\\s+(?!.*--no-install-recommends).*",
+        "suggestion": "Add '--no-install-recommends' to apt-get install to reduce unnecessary packages."
+    },
+    {
+        "title": "Clean up apt cache",
+        "category": "Build Optimization",
+        "description": "Removing /var/lib/apt/lists prevents caching large package indexes in layers.",
+        "regex_pattern": "(?i)RUN\\s+apt-get\\s+install.*(?!rm -rf /var/lib/apt/lists/)",
+        "suggestion": "After apt-get install, run 'rm -rf /var/lib/apt/lists/*' in the same RUN command."
+    },
+    {
+        "title": "Avoid installing unnecessary packages",
+        "category": "Build Optimization",
+        "description": "Unnecessary packages (like text editors) bloat the image and can introduce security risks.",
+        "regex_pattern": "(?i)RUN\\s+.*apt-get\\s+install\\s+.*\\b(vim|nano|emacs|man-db|dialog)\\b",
+        "suggestion": "Remove unneeded utilities or move them to separate debug images. Keep images minimal."
+    },
+    {
+        "title": "Run one process per container",
+        "category": "Maintainability",
+        "description": "Containers should ideally run a single process for easy scaling and monitoring.",
+        "regex_pattern": "(?i)^\\s*CMD\\s+.*(&&|;|\\|\\|).*",
+        "suggestion": "Split multi-process setups into multiple containers or use orchestrations like Docker Compose."
+    },
+    {
+        "title": "Avoid ephemeral data directories",
+        "category": "CI/CD & Best Practices",
+        "description": "Storing data inside the container breaks the ephemeral principle; use volumes or external data stores.",
+        "regex_pattern": "(?i)^\\s*RUN\\s+.*mkdir\\s+.*(/data|/var/data|/var/lib/.*|/opt/data)",
+        "suggestion": "Use external volumes or external data stores to keep containers stateless and ephemeral."
+    },
+    {
+        "title": "Ensure ENV is not empty",
+        "category": "Maintainability",
+        "description": "Empty ENV variables add confusion and may be unintentional.",
+        "regex_pattern": "(?i)^\\s*ENV\\s+\\w+\\s*(?:=\\s*$|$)",
+        "suggestion": "Provide a value for ENV, or remove it if unnecessary."
+    },
+    {
+        "title": "Use absolute path in WORKDIR",
+        "category": "Maintainability",
+        "description": "Relative WORKDIR paths can cause unexpected behavior and reduce clarity.",
+        "regex_pattern": "(?i)^\\s*WORKDIR\\s+[^/].*",
+        "suggestion": "Use absolute paths in WORKDIR (e.g., WORKDIR /app)."
+    }
+]

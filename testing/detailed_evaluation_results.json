@@ -1,0 +1,959 @@
+[
+  {
+    "filename": "bad_practice_example.dockerfile",
+    "original": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\Dockerfiles_set\\bad_practice_example.dockerfile",
+      "content": "# Example with several bad practices\nFROM ubuntu:latest\n\n# Bad: Using latest tag\n# Bad: Separate RUN commands\nRUN apt-get update\nRUN apt-get install -y python3 python3-pip git\nRUN pip3 install flask requests\n\n# Bad: Using ADD for local context\nADD . /app\nWORKDIR /app\n\n# Bad: Running as root (implied, no USER instruction)\nCMD [\"python3\", \"app.py\"] ",
+      "analysis": {
+        "build_success": false,
+        "size": 0,
+        "layers": 0,
+        "build_time": 1.2029999999977008,
+        "error": "Build Error: The command '/bin/sh -c pip3 install flask requests' returned a non-zero code: 1",
+        "linter_issues": [
+          {
+            "line_number": 2,
+            "line_content": "FROM ubuntu:latest",
+            "rule_id": "DOCKER_008",
+            "title": "Avoid using latest tag",
+            "description": "Using 'latest' can lead to non-reproducible builds.",
+            "severity": "HIGH",
+            "suggestion": "Use a specific version tag (e.g., 'FROM ubuntu:22.04')."
+          },
+          {
+            "line_number": 6,
+            "line_content": "RUN apt-get update",
+            "rule_id": "DOCKER_010",
+            "title": "Avoid apt-get update alone",
+            "description": "Running apt-get update in a separate layer without install can lead to stale caches.",
+            "severity": "MEDIUM",
+            "suggestion": "Combine 'apt-get update' and 'apt-get install' in a single RUN instruction."
+          },
+          {
+            "line_number": 7,
+            "line_content": "RUN apt-get install -y python3 python3-pip git",
+            "rule_id": "DOCKER_006",
+            "title": "Pin package versions",
+            "description": "Pinning package versions ensures that builds remain consistent.",
+            "severity": "HIGH",
+            "suggestion": "Specify exact package versions instead of relying on the latest available version."
+          },
+          {
+            "line_number": 7,
+            "line_content": "RUN apt-get install -y python3 python3-pip git",
+            "rule_id": "DOCKER_011",
+            "title": "Use apt-get install --no-install-recommends",
+            "description": "Minimize image size by avoiding installing recommended extra packages.",
+            "severity": "MEDIUM",
+            "suggestion": "Add '--no-install-recommends' to apt-get install to reduce unnecessary packages."
+          },
+          {
+            "line_number": 7,
+            "line_content": "RUN apt-get install -y python3 python3-pip git",
+            "rule_id": "DOCKER_012",
+            "title": "Clean up apt cache",
+            "description": "Removing /var/lib/apt/lists prevents caching large package indexes in layers.",
+            "severity": "MEDIUM",
+            "suggestion": "After apt-get install, run 'rm -rf /var/lib/apt/lists/*' in the same RUN command."
+          },
+          {
+            "line_number": 11,
+            "line_content": "ADD . /app",
+            "rule_id": "DOCKER_005",
+            "title": "Use COPY instead of ADD",
+            "description": "'ADD' has extra functionality like auto-extracting tar files, which is often unnecessary and can cause unexpected behavior.",
+            "severity": "MEDIUM",
+            "suggestion": "Use 'COPY' instead of 'ADD' unless remote file download or auto-extraction is required."
+          },
+          {
+            "line_number": 14,
+            "line_content": "No USER instruction found in Dockerfile",
+            "rule_id": "DOCKER_003",
+            "title": "Use USER Instruction and specify a non root user",
+            "description": "No USER instruction found in Dockerfile. Running containers as root is a security risk.",
+            "severity": "CRITICAL",
+            "suggestion": "Add a USER instruction with a non-root user (e.g., 'USER myapp')."
+          },
+          {
+            "line_number": 2,
+            "line_content": "No named stage (e.g., 'AS builder') found. Multi-stage build recommended.",
+            "rule_id": "DOCKER_000",
+            "title": "Use multi-stage builds",
+            "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+            "severity": "HIGH",
+            "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+          }
+        ],
+        "linter_issue_count": 8
+      }
+    },
+    "baseline": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\output\\example1_baseline_bad_practice_example.dockerfile",
+      "content": "FROM ubuntu:22.04\n\n# Combine RUN commands and pin package versions for consistency\nRUN apt-get update && \\\n    apt-get install -y python3=3.10.* python3-pip=22.0.* git=1:2.34.* --no-install-recommends && \\\n    pip3 install flask==2.1.0 requests==2.27.1 && \\\n    apt-get clean && rm -rf /var/lib/apt/lists/*\n\n# Use COPY instead of ADD\nCOPY . /app\nWORKDIR /app\n\n# Create a non-root user\nRUN useradd -m appuser\nUSER appuser\n\nCMD [\"python3\", \"app.py\"]",
+      "analysis": {
+        "build_success": true,
+        "size": 199386471,
+        "layers": 12,
+        "build_time": 227.85899999999674,
+        "error": null,
+        "linter_issues": [
+          {
+            "line_number": 1,
+            "line_content": "FROM ubuntu:22.04",
+            "rule_id": "DOCKER_001",
+            "title": "Choose the right base image",
+            "description": "Use trusted base images with minimal dependencies to enhance security and reduce image size.",
+            "severity": "HIGH",
+            "suggestion": "Use an official and minimal base image for better security and performance."
+          },
+          {
+            "line_number": 1,
+            "line_content": "No named stage (e.g., 'AS builder') found. Multi-stage build recommended.",
+            "rule_id": "DOCKER_000",
+            "title": "Use multi-stage builds",
+            "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+            "severity": "HIGH",
+            "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+          }
+        ],
+        "linter_issue_count": 2
+      }
+    },
+    "custom": {
+      "path": "from_json",
+      "content": "# Stage 1: Build environment\nFROM python:3.11-slim AS builder\nWORKDIR /app\n\n# Install build dependencies\nRUN pip install --no-cache-dir wheel\n\nCOPY requirements.txt .\n# Use caching for dependencies\nRUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt\n\n# Stage 2: Production environment\nFROM python:3.11-alpine\nWORKDIR /app\n\n# Install essential runtime dependencies\nRUN apk add --no-cache libstdc++ libc6-compat\n\n# Copy only necessary artifacts from builder stage\nCOPY --from=builder /wheels /wheels\nCOPY --from=builder /app/requirements.txt .\nRUN pip install --no-cache /wheels/*\n\n# Copy application source\nCOPY . /app\n\n# Create non-root user securely\nRUN adduser -D -H -s /sbin/nologin appuser\nUSER appuser\n\nCMD [\"python\", \"app.py\"]",
+      "analysis": {
+        "build_success": false,
+        "size": 0,
+        "layers": 0,
+        "build_time": 3.8589999999967404,
+        "error": "Build Error: The command '/bin/sh -c pip install --no-cache /wheels/*' returned a non-zero code: 1",
+        "linter_issues": [],
+        "linter_issue_count": 0
+      }
+    },
+    "comparison_metrics": {
+      "baseline": {
+        "build_success": true,
+        "size_reduction_abs": 0,
+        "size_reduction_pct": 0.0,
+        "time_reduction_abs": 0,
+        "time_reduction_pct": 0.0,
+        "issues_fixed": -2,
+        "size": 199386471,
+        "time": 227.85899999999674,
+        "issue_count": 2,
+        "original_size": 0,
+        "original_time": 0,
+        "original_issue_count": 0
+      },
+      "custom": {
+        "build_success": false,
+        "size_reduction_abs": 0,
+        "size_reduction_pct": 0.0,
+        "time_reduction_abs": 0,
+        "time_reduction_pct": 0.0,
+        "issues_fixed": 0,
+        "size": 0,
+        "time": 0,
+        "issue_count": 0,
+        "original_size": 0,
+        "original_time": 0,
+        "original_issue_count": 0
+      }
+    }
+  },
+  {
+    "filename": "cache_and_recommends.dockerfile",
+    "original": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\Dockerfiles_set\\cache_and_recommends.dockerfile",
+      "content": "FROM debian:bullseye\n\n# Bad: Not cleaning apt cache in the same layer\nRUN apt-get update && apt-get install -y curl\n\n# Bad: Not using --no-install-recommends\nRUN apt-get install -y vim-tiny\n\n# Bad: Cache not cleaned up\n# RUN rm -rf /var/lib/apt/lists/*\n\nCOPY . /app\nWORKDIR /app\n\nCMD [\"echo\", \"Build complete\"] ",
+      "analysis": {
+        "build_success": true,
+        "size": 153620517,
+        "layers": 6,
+        "build_time": 7.422000000002299,
+        "error": null,
+        "linter_issues": [
+          {
+            "line_number": 7,
+            "line_content": "RUN apt-get install -y vim-tiny",
+            "rule_id": "DOCKER_006",
+            "title": "Pin package versions",
+            "description": "Pinning package versions ensures that builds remain consistent.",
+            "severity": "HIGH",
+            "suggestion": "Specify exact package versions instead of relying on the latest available version."
+          },
+          {
+            "line_number": 7,
+            "line_content": "RUN apt-get install -y vim-tiny",
+            "rule_id": "DOCKER_011",
+            "title": "Use apt-get install --no-install-recommends",
+            "description": "Minimize image size by avoiding installing recommended extra packages.",
+            "severity": "MEDIUM",
+            "suggestion": "Add '--no-install-recommends' to apt-get install to reduce unnecessary packages."
+          },
+          {
+            "line_number": 7,
+            "line_content": "RUN apt-get install -y vim-tiny",
+            "rule_id": "DOCKER_012",
+            "title": "Clean up apt cache",
+            "description": "Removing /var/lib/apt/lists prevents caching large package indexes in layers.",
+            "severity": "MEDIUM",
+            "suggestion": "After apt-get install, run 'rm -rf /var/lib/apt/lists/*' in the same RUN command."
+          },
+          {
+            "line_number": 7,
+            "line_content": "RUN apt-get install -y vim-tiny",
+            "rule_id": "DOCKER_013",
+            "title": "Avoid installing unnecessary packages",
+            "description": "Unnecessary packages (like text editors) bloat the image and can introduce security risks.",
+            "severity": "MEDIUM",
+            "suggestion": "Remove unneeded utilities or move them to separate debug images. Keep images minimal."
+          },
+          {
+            "line_number": 14,
+            "line_content": "No USER instruction found in Dockerfile",
+            "rule_id": "DOCKER_003",
+            "title": "Use USER Instruction and specify a non root user",
+            "description": "No USER instruction found in Dockerfile. Running containers as root is a security risk.",
+            "severity": "CRITICAL",
+            "suggestion": "Add a USER instruction with a non-root user (e.g., 'USER myapp')."
+          },
+          {
+            "line_number": 1,
+            "line_content": "No named stage (e.g., 'AS builder') found. Multi-stage build recommended.",
+            "rule_id": "DOCKER_000",
+            "title": "Use multi-stage builds",
+            "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+            "severity": "HIGH",
+            "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+          }
+        ],
+        "linter_issue_count": 6
+      }
+    },
+    "baseline": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\output\\example1_baseline_cache_and_recommends.dockerfile",
+      "content": "FROM debian:bullseye\n\n# Optimize package installation and clean up in a single layer\nRUN apt-get update && \\\n    apt-get install -y --no-install-recommends curl vim-tiny && \\\n    rm -rf /var/lib/apt/lists/*\n\nCOPY . /app\nWORKDIR /app\n\nCMD [\"echo\", \"Build complete\"]",
+      "analysis": {
+        "build_success": true,
+        "size": 130874578,
+        "layers": 5,
+        "build_time": 4.84400000000096,
+        "error": null,
+        "linter_issues": [
+          {
+            "line_number": 10,
+            "line_content": "No USER instruction found in Dockerfile",
+            "rule_id": "DOCKER_003",
+            "title": "Use USER Instruction and specify a non root user",
+            "description": "No USER instruction found in Dockerfile. Running containers as root is a security risk.",
+            "severity": "CRITICAL",
+            "suggestion": "Add a USER instruction with a non-root user (e.g., 'USER myapp')."
+          },
+          {
+            "line_number": 1,
+            "line_content": "No named stage (e.g., 'AS builder') found. Multi-stage build recommended.",
+            "rule_id": "DOCKER_000",
+            "title": "Use multi-stage builds",
+            "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+            "severity": "HIGH",
+            "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+          }
+        ],
+        "linter_issue_count": 2
+      }
+    },
+    "custom": {
+      "path": "from_json",
+      "content": "FROM debian:bullseye-slim\n\nLABEL maintainer=\"example@example.com\"\n\n# Install necessary packages with version pinning and cleanup\nRUN apt-get update && \\\n    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \\\n    curl=7.74.0-1.3+deb11u1 && \\\n    rm -rf /var/lib/apt/lists/*\n\nCOPY . /app\nWORKDIR /app\n\n# Not running as root\nRUN useradd -m appuser\nUSER appuser\n\nCMD [\"echo\", \"Build complete\"]",
+      "analysis": {
+        "build_success": false,
+        "size": 0,
+        "layers": 0,
+        "build_time": 7.889999999999418,
+        "error": "Build Error: The command '/bin/sh -c apt-get update &&     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends     curl=7.74.0-1.3+deb11u1 &&     rm -rf /var/lib/apt/lists/*' returned a non-zero code: 100",
+        "linter_issues": [
+          {
+            "line_number": 1,
+            "line_content": "No named stage (e.g., 'AS builder') found. Multi-stage build recommended.",
+            "rule_id": "DOCKER_000",
+            "title": "Use multi-stage builds",
+            "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+            "severity": "HIGH",
+            "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+          }
+        ],
+        "linter_issue_count": 1
+      }
+    },
+    "comparison_metrics": {
+      "baseline": {
+        "build_success": true,
+        "size_reduction_abs": 22745939,
+        "size_reduction_pct": 14.806576259602094,
+        "time_reduction_abs": 2.5780000000013388,
+        "time_reduction_pct": 34.73457289141121,
+        "issues_fixed": 4,
+        "size": 130874578,
+        "time": 4.84400000000096,
+        "issue_count": 2,
+        "original_size": 153620517,
+        "original_time": 7.422000000002299,
+        "original_issue_count": 6
+      },
+      "custom": {
+        "build_success": false,
+        "size_reduction_abs": 0,
+        "size_reduction_pct": 0.0,
+        "time_reduction_abs": 0,
+        "time_reduction_pct": 0.0,
+        "issues_fixed": 6,
+        "size": 0,
+        "time": 0,
+        "issue_count": 0,
+        "original_size": 153620517,
+        "original_time": 7.422000000002299,
+        "original_issue_count": 6
+      }
+    }
+  },
+  {
+    "filename": "complex_multistage.dockerfile",
+    "original": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\Dockerfiles_set\\complex_multistage.dockerfile",
+      "content": "# Dockerfile: complex_multistage.dockerfile\nFROM python:3.9 AS builder\n\nRUN apt-get update && apt-get install -y --no-install-recommends build-essential libpq-dev && rm -rf /var/lib/apt/lists/*\n\nWORKDIR /build\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\n\n# Non-slim intentionally for testing\nFROM python:3.9\n\nWORKDIR /app\nCOPY --from=builder /build /app \nCOPY app.py .\n\nRUN adduser --system --no-create-home appuser\nUSER appuser\n\nCMD [\"python\", \"app.py\"] ",
+      "analysis": {
+        "build_success": true,
+        "size": 999376402,
+        "layers": 19,
+        "build_time": 1.5319999999992433,
+        "error": null,
+        "linter_issues": [
+          {
+            "line_number": 11,
+            "line_content": "FROM python:3.9",
+            "rule_id": "DOCKER_001",
+            "title": "Choose the right base image",
+            "description": "Use trusted base images with minimal dependencies to enhance security and reduce image size.",
+            "severity": "HIGH",
+            "suggestion": "Use an official and minimal base image for better security and performance."
+          }
+        ],
+        "linter_issue_count": 1
+      }
+    },
+    "baseline": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\output\\example1_baseline_complex_multistage.dockerfile",
+      "content": "# Use official Python base image for building\nFROM python:3.9-slim AS builder\n\n# Install necessary build tools only\nRUN apt-get update && apt-get install -y --no-install-recommends \\\n    build-essential \\\n    libpq-dev \\\n    && rm -rf /var/lib/apt/lists/*\n\nWORKDIR /build\nCOPY requirements.txt .\n\n# Install Python dependencies\nRUN pip install --no-cache-dir -r requirements.txt\n\n# Use a slim Python base image for the final image\nFROM python:3.9-slim\n\nWORKDIR /app\n\n# Copy only necessary files from the builder stage\nCOPY --from=builder /build /app\n\n# Copy application code\nCOPY app.py .\n\n# Create non-root user\nRUN adduser --system --no-create-home appuser\nUSER appuser\n\n# Execute the application\nCMD [\"python\", \"app.py\"]",
+      "analysis": {
+        "build_success": true,
+        "size": 125542430,
+        "layers": 16,
+        "build_time": 1.1880000000019209,
+        "error": null,
+        "linter_issues": [],
+        "linter_issue_count": 0
+      }
+    },
+    "custom": {
+      "path": "from_json",
+      "content": "# Dockerfile: optimized_multistage.dockerfile\nFROM python:3.9-slim AS builder\n\nRUN apt-get update && apt-get install -y --no-install-recommends build-essential libpq-dev && rm -rf /var/lib/apt/lists/*\n\nWORKDIR /build\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\n\nFROM python:3.9-slim\n\nWORKDIR /app\nCOPY --from=builder /build /app\nCOPY app.py .\n\nRUN adduser --system --no-create-home appuser\nUSER appuser\n\nCMD [\"python\", \"app.py\"]",
+      "analysis": {
+        "build_success": true,
+        "size": 125542430,
+        "layers": 16,
+        "build_time": 21.21900000000096,
+        "error": null,
+        "linter_issues": [],
+        "linter_issue_count": 0
+      }
+    },
+    "comparison_metrics": {
+      "baseline": {
+        "build_success": true,
+        "size_reduction_abs": 873833972,
+        "size_reduction_pct": 87.43792331410283,
+        "time_reduction_abs": 0.34399999999732245,
+        "time_reduction_pct": 22.454308093831095,
+        "issues_fixed": 1,
+        "size": 125542430,
+        "time": 1.1880000000019209,
+        "issue_count": 0,
+        "original_size": 999376402,
+        "original_time": 1.5319999999992433,
+        "original_issue_count": 1
+      },
+      "custom": {
+        "build_success": true,
+        "size_reduction_abs": 873833972,
+        "size_reduction_pct": 87.43792331410283,
+        "time_reduction_abs": -19.687000000001717,
+        "time_reduction_pct": -1285.0522193218958,
+        "issues_fixed": 1,
+        "size": 125542430,
+        "time": 21.21900000000096,
+        "issue_count": 0,
+        "original_size": 999376402,
+        "original_time": 1.5319999999992433,
+        "original_issue_count": 1
+      }
+    }
+  },
+  {
+    "filename": "known_issues.dockerfile",
+    "original": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\Dockerfiles_set\\known_issues.dockerfile",
+      "content": "# Dockerfile: known_issues.dockerfile\nFROM python:latest\n\nRUN apt-get update\nRUN apt-get install -y vim nano && rm -rf /var/lib/apt/lists/* # Should suggest --no-install-recommends, cleanup is okay but pkgs are bad\nRUN mkdir /data && cd /data\n\nADD . /app\nWORKDIR /app\n\nENV BAD_VAR=\n\nUSER root\n\nCMD python app.py && echo \"done\" ",
+      "analysis": {
+        "build_success": true,
+        "size": 1083425906,
+        "layers": 20,
+        "build_time": 7.98399999999674,
+        "error": null,
+        "linter_issues": [
+          {
+            "line_number": 2,
+            "line_content": "FROM python:latest",
+            "rule_id": "DOCKER_008",
+            "title": "Avoid using latest tag",
+            "description": "Using 'latest' can lead to non-reproducible builds.",
+            "severity": "HIGH",
+            "suggestion": "Use a specific version tag (e.g., 'FROM ubuntu:22.04')."
+          },
+          {
+            "line_number": 4,
+            "line_content": "RUN apt-get update",
+            "rule_id": "DOCKER_010",
+            "title": "Avoid apt-get update alone",
+            "description": "Running apt-get update in a separate layer without install can lead to stale caches.",
+            "severity": "MEDIUM",
+            "suggestion": "Combine 'apt-get update' and 'apt-get install' in a single RUN instruction."
+          },
+          {
+            "line_number": 5,
+            "line_content": "RUN apt-get install -y vim nano && rm -rf /var/lib/apt/lists/* # Should suggest --no-install-recommends, cleanup is okay but pkgs are bad",
+            "rule_id": "DOCKER_006",
+            "title": "Pin package versions",
+            "description": "Pinning package versions ensures that builds remain consistent.",
+            "severity": "HIGH",
+            "suggestion": "Specify exact package versions instead of relying on the latest available version."
+          },
+          {
+            "line_number": 5,
+            "line_content": "RUN apt-get install -y vim nano && rm -rf /var/lib/apt/lists/* # Should suggest --no-install-recommends, cleanup is okay but pkgs are bad",
+            "rule_id": "DOCKER_012",
+            "title": "Clean up apt cache",
+            "description": "Removing /var/lib/apt/lists prevents caching large package indexes in layers.",
+            "severity": "MEDIUM",
+            "suggestion": "After apt-get install, run 'rm -rf /var/lib/apt/lists/*' in the same RUN command."
+          },
+          {
+            "line_number": 5,
+            "line_content": "RUN apt-get install -y vim nano && rm -rf /var/lib/apt/lists/* # Should suggest --no-install-recommends, cleanup is okay but pkgs are bad",
+            "rule_id": "DOCKER_013",
+            "title": "Avoid installing unnecessary packages",
+            "description": "Unnecessary packages (like text editors) bloat the image and can introduce security risks.",
+            "severity": "MEDIUM",
+            "suggestion": "Remove unneeded utilities or move them to separate debug images. Keep images minimal."
+          },
+          {
+            "line_number": 6,
+            "line_content": "RUN mkdir /data && cd /data",
+            "rule_id": "DOCKER_015",
+            "title": "Avoid ephemeral data directories",
+            "description": "Storing data inside the container breaks the ephemeral principle; use volumes or external data stores.",
+            "severity": "LOW",
+            "suggestion": "Use external volumes or external data stores to keep containers stateless and ephemeral."
+          },
+          {
+            "line_number": 8,
+            "line_content": "ADD . /app",
+            "rule_id": "DOCKER_005",
+            "title": "Use COPY instead of ADD",
+            "description": "'ADD' has extra functionality like auto-extracting tar files, which is often unnecessary and can cause unexpected behavior.",
+            "severity": "MEDIUM",
+            "suggestion": "Use 'COPY' instead of 'ADD' unless remote file download or auto-extraction is required."
+          },
+          {
+            "line_number": 11,
+            "line_content": "ENV BAD_VAR=",
+            "rule_id": "DOCKER_016",
+            "title": "Ensure ENV is not empty",
+            "description": "Empty ENV variables add confusion and may be unintentional.",
+            "severity": "MEDIUM",
+            "suggestion": "Provide a value for ENV, or remove it if unnecessary."
+          },
+          {
+            "line_number": 13,
+            "line_content": "USER root",
+            "rule_id": "DOCKER_002",
+            "title": "Prevent running as root user",
+            "description": "Running as root inside a container is a security risk. Use a non-root user instead.",
+            "severity": "CRITICAL",
+            "suggestion": "Use a non-root user for better security (e.g., 'USER myuser')."
+          },
+          {
+            "line_number": 13,
+            "line_content": "USER root",
+            "rule_id": "DOCKER_003",
+            "title": "Use USER Instruction and specify a non root user",
+            "description": "No USER instruction found in Dockerfile. Running containers as root is a security risk.",
+            "severity": "CRITICAL",
+            "suggestion": "Add a USER instruction with a non-root user (e.g., 'USER myapp')."
+          },
+          {
+            "line_number": 15,
+            "line_content": "CMD python app.py && echo \"done\" ",
+            "rule_id": "DOCKER_014",
+            "title": "Run one process per container",
+            "description": "Containers should ideally run a single process for easy scaling and monitoring.",
+            "severity": "MEDIUM",
+            "suggestion": "Split multi-process setups into multiple containers or use orchestrations like Docker Compose."
+          },
+          {
+            "line_number": 2,
+            "line_content": "No named stage (e.g., 'AS builder') found. Multi-stage build recommended.",
+            "rule_id": "DOCKER_000",
+            "title": "Use multi-stage builds",
+            "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+            "severity": "HIGH",
+            "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+          }
+        ],
+        "linter_issue_count": 12
+      }
+    },
+    "baseline": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\output\\example1_baseline_known_issues.dockerfile",
+      "content": "# Dockerfile: optimized\nFROM python:3.9-slim\n\n# Install only what's necessary and avoid unnecessary packages\nRUN apt-get update && apt-get install -y --no-install-recommends vim-tiny nano-tiny && rm -rf /var/lib/apt/lists/*\n\nWORKDIR /app\nCOPY . /app\n\n# Remove unused environment variable\n# ENV BAD_VAR=\n\n# Use a non-root user for security\nRUN useradd -ms /bin/bash appuser\nUSER appuser\n\nCMD [\"python\", \"app.py\"]",
+      "analysis": {
+        "build_success": true,
+        "size": 128551802,
+        "layers": 16,
+        "build_time": 5.312999999998283,
+        "error": null,
+        "linter_issues": [
+          {
+            "line_number": 5,
+            "line_content": "RUN apt-get update && apt-get install -y --no-install-recommends vim-tiny nano-tiny && rm -rf /var/lib/apt/lists/*",
+            "rule_id": "DOCKER_013",
+            "title": "Avoid installing unnecessary packages",
+            "description": "Unnecessary packages (like text editors) bloat the image and can introduce security risks.",
+            "severity": "MEDIUM",
+            "suggestion": "Remove unneeded utilities or move them to separate debug images. Keep images minimal."
+          },
+          {
+            "line_number": 2,
+            "line_content": "No named stage (e.g., 'AS builder') found. Multi-stage build recommended.",
+            "rule_id": "DOCKER_000",
+            "title": "Use multi-stage builds",
+            "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+            "severity": "HIGH",
+            "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+          }
+        ],
+        "linter_issue_count": 2
+      }
+    },
+    "custom": {
+      "path": "from_json",
+      "content": "# Dockerfile: optimized Dockerfile\nFROM python:3.9-slim\n\nLABEL maintainer=\"Your Name <your.email@example.com>\"\n\n# Install necessary packages\nRUN apt-get update && \\\n    apt-get install -y --no-install-recommends vim nano && \\\n    rm -rf /var/lib/apt/lists/*\n\n# Setup work directory\nWORKDIR /app\nCOPY . /app\n\n# Set environment variables\nENV PYTHONUNBUFFERED=1\n\n# Create a non-root user and switch to it\nRUN useradd -ms /bin/bash appuser\nUSER appuser\n\nCMD [\"python\", \"app.py\"]",
+      "analysis": {
+        "build_success": true,
+        "size": 167553292,
+        "layers": 18,
+        "build_time": 7.015999999999622,
+        "error": null,
+        "linter_issues": [
+          {
+            "line_number": 2,
+            "line_content": "No named stage (e.g., 'AS builder') found. Multi-stage build recommended.",
+            "rule_id": "DOCKER_000",
+            "title": "Use multi-stage builds",
+            "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+            "severity": "HIGH",
+            "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+          }
+        ],
+        "linter_issue_count": 1
+      }
+    },
+    "comparison_metrics": {
+      "baseline": {
+        "build_success": true,
+        "size_reduction_abs": 954874104,
+        "size_reduction_pct": 88.13469372588548,
+        "time_reduction_abs": 2.6709999999984575,
+        "time_reduction_pct": 33.45440881762961,
+        "issues_fixed": 10,
+        "size": 128551802,
+        "time": 5.312999999998283,
+        "issue_count": 2,
+        "original_size": 1083425906,
+        "original_time": 7.98399999999674,
+        "original_issue_count": 12
+      },
+      "custom": {
+        "build_success": true,
+        "size_reduction_abs": 915872614,
+        "size_reduction_pct": 84.53486379898322,
+        "time_reduction_abs": 0.9679999999971187,
+        "time_reduction_pct": 12.12424849696285,
+        "issues_fixed": 11,
+        "size": 167553292,
+        "time": 7.015999999999622,
+        "issue_count": 1,
+        "original_size": 1083425906,
+        "original_time": 7.98399999999674,
+        "original_issue_count": 12
+      }
+    }
+  },
+  {
+    "filename": "multi_stage_good.dockerfile",
+    "original": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\Dockerfiles_set\\multi_stage_good.dockerfile",
+      "content": "# Stage 1: Build environment\nFROM python:3.11-slim AS builder\nWORKDIR /app\n\n# Install build dependencies\nRUN pip install --no-cache-dir wheel\n\nCOPY requirements.txt .\n# Use caching for dependencies\nRUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt\n\n# Stage 2: Production environment\nFROM python:3.11-alpine\nWORKDIR /app\n\n# Copy only necessary artifacts from builder stage\nCOPY --from=builder /wheels /wheels\nCOPY --from=builder /app/requirements.txt .\nRUN pip install --no-cache /wheels/*\n\nCOPY . /app\n\n# Create non-root user\nRUN adduser -D appuser\nUSER appuser\n\nCMD [\"python\", \"app.py\"] ",
+      "analysis": {
+        "build_success": false,
+        "size": 0,
+        "layers": 0,
+        "build_time": 2.4060000000026776,
+        "error": "Build Error: The command '/bin/sh -c pip install --no-cache /wheels/*' returned a non-zero code: 1",
+        "linter_issues": [],
+        "linter_issue_count": 0
+      }
+    },
+    "baseline": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\output\\example1_baseline_multi_stage_good.dockerfile",
+      "content": "# Stage 1: Build environment\nFROM python:3.11-slim AS builder\nWORKDIR /app\n\n# Install build dependencies\nRUN apt-get update && apt-get install -y --no-install-recommends \\\n    build-essential && \\\n    rm -rf /var/lib/apt/lists/*\n\n# Install wheel with no-cache\nRUN pip install --no-cache-dir wheel\n\nCOPY requirements.txt .\n# Use caching for dependencies\nRUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt\n\n# Stage 2: Production environment\nFROM python:3.11-alpine\nWORKDIR /app\n\n# Install runtime dependencies\nRUN apk add --no-cache libstdc++ musl\n\n# Copy only necessary artifacts from builder stage\nCOPY --from=builder /wheels /wheels\nCOPY --from=builder /app/requirements.txt .\nRUN pip install --no-cache /wheels/* && rm -rf /wheels\n\nCOPY . /app\n\n# Ensure the application runs with a non-root user\nRUN adduser -D -s /bin/sh appuser\nUSER appuser\n\nCMD [\"python\", \"app.py\"]",
+      "analysis": {
+        "build_success": false,
+        "size": 0,
+        "layers": 0,
+        "build_time": 2.4689999999973224,
+        "error": "Build Error: The command '/bin/sh -c pip install --no-cache /wheels/* && rm -rf /wheels' returned a non-zero code: 1",
+        "linter_issues": [],
+        "linter_issue_count": 0
+      }
+    },
+    "custom": {
+      "path": "from_json",
+      "content": "# Stage 1: Build environment\nFROM python:3.11-slim AS builder\nWORKDIR /app\n\n# Install build dependencies\nRUN pip install --no-cache-dir wheel\n\n# Use .dockerignore to exclude unnecessary files\nCOPY requirements.txt .\nRUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt\n\n# Stage 2: Production environment\nFROM python:3.11-alpine\nWORKDIR /app\n\n# Install necessary OS packages (if any need arises later)\nRUN apk add --no-cache libstdc++  # Example of necessary runtime dependencies\n\n# Copy only necessary artifacts from builder stage\nCOPY --from=builder /wheels /wheels\nCOPY --from=builder /app/requirements.txt .\nRUN pip install --no-cache-dir /wheels/*\n\n# Copy application code\nCOPY . /app\n\n# Create non-root user\nRUN adduser -D -H appuser\nUSER appuser\n\nCMD [\"python\", \"app.py\"]",
+      "analysis": {
+        "build_success": false,
+        "size": 0,
+        "layers": 0,
+        "build_time": 3.812000000001717,
+        "error": "Build Error: The command '/bin/sh -c pip install --no-cache-dir /wheels/*' returned a non-zero code: 1",
+        "linter_issues": [],
+        "linter_issue_count": 0
+      }
+    },
+    "comparison_metrics": {
+      "baseline": {
+        "build_success": false,
+        "size_reduction_abs": 0,
+        "size_reduction_pct": 0.0,
+        "time_reduction_abs": 0,
+        "time_reduction_pct": 0.0,
+        "issues_fixed": 0,
+        "size": 0,
+        "time": 0,
+        "issue_count": 0,
+        "original_size": 0,
+        "original_time": 0,
+        "original_issue_count": 0
+      },
+      "custom": {
+        "build_success": false,
+        "size_reduction_abs": 0,
+        "size_reduction_pct": 0.0,
+        "time_reduction_abs": 0,
+        "time_reduction_pct": 0.0,
+        "issues_fixed": 0,
+        "size": 0,
+        "time": 0,
+        "issue_count": 0,
+        "original_size": 0,
+        "original_time": 0,
+        "original_issue_count": 0
+      }
+    }
+  },
+  {
+    "filename": "optimized_example.dockerfile",
+    "original": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\Dockerfiles_set\\optimized_example.dockerfile",
+      "content": "# Dockerfile: optimized_example.dockerfile\nFROM python:3.11-slim AS builder\n\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\n\nFROM python:3.11-slim\n\nRUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser\nUSER appuser\n\nWORKDIR /app\nCOPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages\nCOPY app.py .\n\nEXPOSE 8000\nCMD [\"python\", \"app.py\"] ",
+      "analysis": {
+        "build_success": true,
+        "size": 146566317,
+        "layers": 17,
+        "build_time": 1.9219999999986612,
+        "error": null,
+        "linter_issues": [],
+        "linter_issue_count": 0
+      }
+    },
+    "baseline": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\output\\example1_baseline_optimized_example.dockerfile",
+      "content": null,
+      "analysis": {
+        "build_success": false,
+        "size": 0,
+        "layers": 0,
+        "build_time": 0.0,
+        "error": "Content unavailable",
+        "linter_issues": [],
+        "linter_issue_count": -1
+      }
+    },
+    "custom": {
+      "path": "from_json",
+      "content": null,
+      "analysis": {
+        "build_success": false,
+        "size": 0,
+        "layers": 0,
+        "build_time": 0.0,
+        "error": "Content unavailable",
+        "linter_issues": [],
+        "linter_issue_count": -1
+      }
+    },
+    "comparison_metrics": {
+      "baseline": {
+        "build_success": false,
+        "size_reduction_abs": 0,
+        "size_reduction_pct": 0.0,
+        "time_reduction_abs": 0,
+        "time_reduction_pct": 0.0,
+        "issues_fixed": 0,
+        "size": 0,
+        "time": 0,
+        "issue_count": 0,
+        "original_size": 146566317,
+        "original_time": 1.9219999999986612,
+        "original_issue_count": 0
+      },
+      "custom": {
+        "build_success": false,
+        "size_reduction_abs": 0,
+        "size_reduction_pct": 0.0,
+        "time_reduction_abs": 0,
+        "time_reduction_pct": 0.0,
+        "issues_fixed": 0,
+        "size": 0,
+        "time": 0,
+        "issue_count": 0,
+        "original_size": 146566317,
+        "original_time": 1.9219999999986612,
+        "original_issue_count": 0
+      }
+    }
+  },
+  {
+    "filename": "simple_alpine.dockerfile",
+    "original": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\Dockerfiles_set\\simple_alpine.dockerfile",
+      "content": "FROM python:3.10-alpine\n\nRUN apk add --no-cache curl\n\nCOPY . /app\nWORKDIR /app\n\nRUN adduser -D appuser\nUSER appuser\n\nCMD [\"python\", \"app.py\"] ",
+      "analysis": {
+        "build_success": true,
+        "size": 56125870,
+        "layers": 17,
+        "build_time": 1.2810000000026776,
+        "error": null,
+        "linter_issues": [
+          {
+            "line_number": 1,
+            "line_content": "No named stage (e.g., 'AS builder') found. Multi-stage build recommended.",
+            "rule_id": "DOCKER_000",
+            "title": "Use multi-stage builds",
+            "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+            "severity": "HIGH",
+            "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+          }
+        ],
+        "linter_issue_count": 1
+      }
+    },
+    "baseline": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\output\\example1_baseline_simple_alpine.dockerfile",
+      "content": null,
+      "analysis": {
+        "build_success": false,
+        "size": 0,
+        "layers": 0,
+        "build_time": 0.0,
+        "error": "Content unavailable",
+        "linter_issues": [],
+        "linter_issue_count": -1
+      }
+    },
+    "custom": {
+      "path": "from_json",
+      "content": null,
+      "analysis": {
+        "build_success": false,
+        "size": 0,
+        "layers": 0,
+        "build_time": 0.0,
+        "error": "Content unavailable",
+        "linter_issues": [],
+        "linter_issue_count": -1
+      }
+    },
+    "comparison_metrics": {
+      "baseline": {
+        "build_success": false,
+        "size_reduction_abs": 0,
+        "size_reduction_pct": 0.0,
+        "time_reduction_abs": 0,
+        "time_reduction_pct": 0.0,
+        "issues_fixed": 1,
+        "size": 0,
+        "time": 0,
+        "issue_count": 0,
+        "original_size": 56125870,
+        "original_time": 1.2810000000026776,
+        "original_issue_count": 1
+      },
+      "custom": {
+        "build_success": false,
+        "size_reduction_abs": 0,
+        "size_reduction_pct": 0.0,
+        "time_reduction_abs": 0,
+        "time_reduction_pct": 0.0,
+        "issues_fixed": 1,
+        "size": 0,
+        "time": 0,
+        "issue_count": 0,
+        "original_size": 56125870,
+        "original_time": 1.2810000000026776,
+        "original_issue_count": 1
+      }
+    }
+  },
+  {
+    "filename": "simple_optimizable.dockerfile",
+    "original": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\Dockerfiles_set\\simple_optimizable.dockerfile",
+      "content": "# Dockerfile: simple_optimizable.dockerfile\nFROM python:3.9\n\nRUN pip install flask\nRUN pip install requests\n\nCOPY . /app\nWORKDIR /app\n\nCMD [\"python\", \"app.py\"] ",
+      "analysis": {
+        "build_success": true,
+        "size": 1014156379,
+        "layers": 18,
+        "build_time": 6.359000000000378,
+        "error": null,
+        "linter_issues": [
+          {
+            "line_number": 2,
+            "line_content": "FROM python:3.9",
+            "rule_id": "DOCKER_001",
+            "title": "Choose the right base image",
+            "description": "Use trusted base images with minimal dependencies to enhance security and reduce image size.",
+            "severity": "HIGH",
+            "suggestion": "Use an official and minimal base image for better security and performance."
+          },
+          {
+            "line_number": 9,
+            "line_content": "No USER instruction found in Dockerfile",
+            "rule_id": "DOCKER_003",
+            "title": "Use USER Instruction and specify a non root user",
+            "description": "No USER instruction found in Dockerfile. Running containers as root is a security risk.",
+            "severity": "CRITICAL",
+            "suggestion": "Add a USER instruction with a non-root user (e.g., 'USER myapp')."
+          },
+          {
+            "line_number": 2,
+            "line_content": "No named stage (e.g., 'AS builder') found. Multi-stage build recommended.",
+            "rule_id": "DOCKER_000",
+            "title": "Use multi-stage builds",
+            "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+            "severity": "HIGH",
+            "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+          }
+        ],
+        "linter_issue_count": 3
+      }
+    },
+    "baseline": {
+      "path": "C:\\Users\\Peter\\Desktop\\Fourth Year\\FYP\\Code\\testing\\output\\example1_baseline_simple_optimizable.dockerfile",
+      "content": "# Dockerfile: optimized_simple.dockerfile\nFROM python:3.9-slim\n\nWORKDIR /app\n\nCOPY requirements.txt /app/\nRUN pip install --no-cache-dir -r requirements.txt\n\nCOPY . /app\n\nCMD [\"python\", \"app.py\"]",
+      "analysis": {
+        "build_success": true,
+        "size": 132027050,
+        "layers": 15,
+        "build_time": 3.0929999999971187,
+        "error": null,
+        "linter_issues": [
+          {
+            "line_number": 10,
+            "line_content": "No USER instruction found in Dockerfile",
+            "rule_id": "DOCKER_003",
+            "title": "Use USER Instruction and specify a non root user",
+            "description": "No USER instruction found in Dockerfile. Running containers as root is a security risk.",
+            "severity": "CRITICAL",
+            "suggestion": "Add a USER instruction with a non-root user (e.g., 'USER myapp')."
+          },
+          {
+            "line_number": 2,
+            "line_content": "No named stage (e.g., 'AS builder') found. Multi-stage build recommended.",
+            "rule_id": "DOCKER_000",
+            "title": "Use multi-stage builds",
+            "description": "Multi-stage builds reduce the final image size and optimize the build process by separating build and runtime stages.",
+            "severity": "HIGH",
+            "suggestion": "Consider using multi-stage builds to reduce final image size. Add 'AS builder' to your build stage."
+          }
+        ],
+        "linter_issue_count": 2
+      }
+    },
+    "custom": {
+      "path": "from_json",
+      "content": null,
+      "analysis": {
+        "build_success": false,
+        "size": 0,
+        "layers": 0,
+        "build_time": 0.0,
+        "error": "Content unavailable",
+        "linter_issues": [],
+        "linter_issue_count": -1
+      }
+    },
+    "comparison_metrics": {
+      "baseline": {
+        "build_success": true,
+        "size_reduction_abs": 882129329,
+        "size_reduction_pct": 86.98158856623432,
+        "time_reduction_abs": 3.2660000000032596,
+        "time_reduction_pct": 51.36027677312573,
+        "issues_fixed": 1,
+        "size": 132027050,
+        "time": 3.0929999999971187,
+        "issue_count": 2,
+        "original_size": 1014156379,
+        "original_time": 6.359000000000378,
+        "original_issue_count": 3
+      },
+      "custom": {
+        "build_success": false,
+        "size_reduction_abs": 0,
+        "size_reduction_pct": 0.0,
+        "time_reduction_abs": 0,
+        "time_reduction_pct": 0.0,
+        "issues_fixed": 3,
+        "size": 0,
+        "time": 0,
+        "issue_count": 0,
+        "original_size": 1014156379,
+        "original_time": 6.359000000000378,
+        "original_issue_count": 3
+      }
+    }
+  }
+]

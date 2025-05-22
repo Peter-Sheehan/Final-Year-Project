@@ -1,0 +1,61 @@
+\chapter{Conclusions and Future Work}
+\label{chap:conclusions}
+\lhead{\emph{Conclusions}}
+
+\section{Discussion}
+Reflecting on the research and development conducted during Semester 1, several challenges were encountered. Key issues included:
+\begin{itemize}
+    \item \textbf{Scope of Docker Smells}: Identifying and categorizing "Docker smells" was challenging due to the lack of a comprehensive, standardized dataset. The reliance on prior studies helped, but gaps in empirical coverage were evident.
+    \item \textbf{Dynamic Rule Updates}: Integrating a reliable web-scraping mechanism posed technical challenges, especially in parsing ever-changing HTML structures from official documentation sites like Docker's. This led to considerations of fallback mechanisms for rule updates.
+    \item \textbf{Performance vs. Real-Time Feedback}: Providing real-time linting feedback required optimization of the linting algorithms to balance thoroughness with responsiveness, especially in IDE environments.
+    \item \textbf{CI/CD Pipeline Integration}: Ensuring compatibility across diverse CI/CD platforms (e.g., Jenkins, GitHub Actions) required modularity in the tool's architecture, adding complexity to the implementation plan.
+\end{itemize}
+
+These challenges informed key design decisions, such as leveraging SQLite for lightweight storage, prioritizing IDE integration for developer usability, and focusing on rule severity ranking for effective feedback. These learnings will guide the iterative improvements and expansions in Semester 2.
+
+\section{Conclusion}
+The Semester 1 phase established a solid foundation for the automated Docker linter. Significant conclusions include:
+\begin{enumerate}
+    \item \textbf{Importance of Smell Detection}: Docker smells like unpinned dependencies and excessive layering are pervasive and impactful, necessitating a robust detection mechanism.
+    \item \textbf{Gap in Existing Tools}: Existing tools like Hadolint and Snyk address parts of the Docker quality landscape but lack comprehensive Docker smell detection with dynamic updates.
+    \item \textbf{Shift-Left Security Impact}: By automating Dockerfile quality checks during development, this tool contributes significantly to early defect detection, improving developer workflows and CI/CD efficiency.
+    \item \textbf{Architectural Feasibility}: A combination of Python for back-end processing, JavaScript for IDE extensions, and SQLite for rule storage offers a scalable and efficient architecture for the linter.
+\end{enumerate}
+
+These findings validate the problem statement and objectives defined earlier in the project, underscoring the necessity of this tool for modern containerized development workflows.
+
+\section{Future Work}
+Looking beyond Semester 1, several enhancements and expansions could significantly improve the Docker linter:
+\begin{itemize}
+    \item \textbf{Advanced AI Integration}:
+    \begin{itemize}
+        \item Explore machine learning models to predict and categorize new Docker smells dynamically, using large datasets of Dockerfiles from public repositories.
+    \end{itemize}
+    \item \textbf{Enhanced Rule Management}:
+    \begin{itemize}
+        \item Implement a robust conflict resolution mechanism for dynamically scraped rules to prevent inconsistencies across sources.
+    \end{itemize}
+    \item \textbf{Expanded IDE Support}:
+    \begin{itemize}
+        \item Extend integration to additional IDEs (e.g., JetBrains IntelliJ, Eclipse) to broaden the user base.
+    \end{itemize}
+    \item \textbf{Broader CI/CD Integration}:
+    \begin{itemize}
+        \item Add support for emerging CI/CD platforms and container orchestration tools like GitLab CI/CD and Kubernetes.
+    \end{itemize}
+    \item \textbf{Usability Studies}:
+    \begin{itemize}
+        \item Conduct developer feedback sessions to refine the tool's usability, focusing on intuitive UI/UX design for the IDE plug-in and quality reports.
+    \end{itemize}
+    \item \textbf{Open-Source Collaboration}:
+    \begin{itemize}
+        \item Open-source the project to foster community contributions, accelerating feature enhancements and establishing the tool as a widely adopted solution.
+    \end{itemize}
+    \item \textbf{Vulnerability Analysis Add-On}:
+    \begin{itemize}
+        \item Although excluded initially, a modular add-on for vulnerability scanning could complement the core functionality, making the tool more comprehensive.
+    \end{itemize}
+\end{itemize}
+
+These avenues will ensure the linter continues evolving into a state-of-the-art tool for Dockerfile quality and security.
+

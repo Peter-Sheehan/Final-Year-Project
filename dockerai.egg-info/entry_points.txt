@@ -1,0 +1,2 @@
+[console_scripts]
+DockerAI = interactive_cli:cli

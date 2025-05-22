@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-from db_manager import DockerRulesDB
 
 URL = "https://docs.docker.com/develop/dev-best-practices/"
 
@@ -31,9 +30,26 @@ def fetch_docker_best_practices():
                 current = current.find_next_sibling()
             
             if description_parts:
+                # Join the description parts first
+                full_description = " ".join(description_parts)
+
+                # --- Correctly chain the cleaning steps --- START ---
+                # Start with the full description
+                cleaned_description = full_description
+                # 1. Replace newlines
+                cleaned_description = cleaned_description.replace('\n', ' ')
+                # 2. Replace curly quotes with standard quotes globally
+                cleaned_description = cleaned_description.replace('"', '"').replace('"', '"')
+                # 3. Specifically fix the LABEL rule sequence by escaping the standard quote
+                cleaned_description = cleaned_description.replace('characters (")', 'characters (\\")')
+                # 4. Specifically fix the USER rule sequence by escaping the standard quotes
+                cleaned_description = cleaned_description.replace('"gosu"', '\\"gosu\\"') # Escape quotes around gosu
+                # --- Correctly chain the cleaning steps --- END ---
+
                 practices.append({
                     "title": title,
-                    "description": " ".join(description_parts)
+                    # Use the correctly cleaned description
+                    "description": cleaned_description
                 })
         
         return practices
@@ -41,28 +57,29 @@ def fetch_docker_best_practices():
         print(f"Error fetching Docker best practices: {e}")
         return None
 
-def update_rules():
-    """Update Docker best practices in database and JSON"""
+def update_rules(config_dir):
+    """Update Docker best practices JSON in the specified config directory."""
     practices = fetch_docker_best_practices()
     if not practices:
         return False
         
     try:
         # Save to JSON for backup/reference
-        with open("docker_best_practices.json", "w", encoding='utf-8') as f:
+        json_path = config_dir / "docker_best_practices.json"
+        # Ensure the directory exists (though get_config_dir should have done it)
+        config_dir.mkdir(parents=True, exist_ok=True)
+        with open(json_path, "w", encoding='utf-8') as f:
             json.dump(practices, f, indent=4, ensure_ascii=False)
         
-        # Save to database
-        db = DockerRulesDB()
-        db.init_db()
-        db.save_practices(practices)
         return True
     except Exception as e:
         print(f"Error saving practices: {e}")
         return False
 
 if __name__ == "__main__":
-    if update_rules():
-        print("Docker best practices updated successfully!")
-    else:
-        print("Failed to update Docker best practices.")
+    # Example usage if run directly (requires config dir logic)
+    # For simplicity, we might remove direct execution or add config dir finding here too
+    print("Running webscraper directly is not the intended use.")
+    # If you want to allow direct running, you'd need to duplicate
+    # the get_config_dir logic here or import it from main.
+    pass # Placeholder to avoid syntax error

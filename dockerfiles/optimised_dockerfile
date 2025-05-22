@@ -1,0 +1,33 @@
+# Using multi-stage builds to reduce image size
+FROM python:3.9-slim AS build
+
+LABEL maintainer="maintainer@example.com"
+
+# Set working directory
+WORKDIR /app
+
+# Copy and install dependencies using a requirements file
+COPY requirements.txt .
+RUN python -m pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Second stage: FROM instruction with a specific, minimal base image
+FROM python:3.9-slim
+
+# Create non-root user and switch to it
+RUN useradd -m myuser
+USER myuser
+
+# Set working directory to absolute path
+WORKDIR /app
+
+# Copy application code from build stage
+COPY --from=build /app /app
+
+# Ensure essential environment variables are set
+ENV MY_VAR=default_value
+
+# Command to run the application
+CMD ["python", "app.py"]
+
+EXPOSE 8080

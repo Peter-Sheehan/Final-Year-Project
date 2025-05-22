@@ -1,0 +1,29 @@
+FROM ubuntu:22.04
+
+# This apt-get update is important for subsequent installs to find packages
+RUN apt-get update
+
+# Test Case 1: Valid pin for python3 on Ubuntu 22.04 (Jammy) - according to catalog pattern
+# Catalog pattern: "3.10.*"
+# This specific version might still fail apt's dependency check, but _package_version_ok should pass it.
+RUN apt-get install -y python3=3.10.6-1~22.04
+
+# Test Case 2: Invalid pin for curl (version too old for Jammy)
+# Catalog pattern for Jammy: "7.81.*". This pin should be stripped.
+RUN apt-get install -y curl=7.60.0-1
+
+
+# Test Case 4: INTENTIONALLY INVALID pin for git (package in catalog, version mismatch)
+# Catalog pattern for Jammy: "1:2.34.*". This pin (2.0.0) should be stripped.
+RUN apt-get install -y git=1:2.0.0-1
+
+# Test Case 5: A more complex RUN command with multiple INTENTIONALLY INVALID pins
+# Nginx: Catalog pattern "1.18.0*" or "1.2*". Pin 1.10.0 should be stripped.
+# Nodejs: Catalog pattern "12.*" or newer. Pin 10.0.0 should be stripped.
+RUN apt-get install -y nginx=1.10.0-1 \
+    nodejs=10.0.0-1
+
+# Test Case 6: Invalid pin for a related package (if python3-dev not in catalog, pin will be stripped)
+# Catalog for python3 on Jammy is "3.10.*", this version (3.8.2) is too old.
+# Pin should be stripped.
+RUN apt-get install -y python3-dev=3.8.2-0ubuntu2 

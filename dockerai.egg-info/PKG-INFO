@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: dockerai
+Version: 0.1.0
+Summary: Dockerfile optimization tool with AI and linter support
+Requires-Dist: click
+Requires-Dist: rich
+Requires-Dist: python-dotenv
+Requires-Dist: docker
+Requires-Dist: PyGithub
+Requires-Dist: PyYAML
+Requires-Dist: openai
+Dynamic: requires-dist
+Dynamic: summary

@@ -4,6 +4,7 @@ import json
 import csv
 from datetime import datetime
 from dockerfile_linter import DockerfileLinter
+import traceback
 
 # Add these color constants at the top of lint_cli.py
 SEVERITY_COLORS = {
@@ -50,60 +51,61 @@ def main():
                       help='Output format (default: text)')
     parser.add_argument('--output-dir', default='linter_reports',
                       help='Directory for CSV reports (default: linter_reports)')
+    parser.add_argument('--rules', default=os.path.join(os.path.dirname(__file__), "Rules", "rules.json"),
+                      help='Path to custom rules JSON file')
     args = parser.parse_args()
 
-    # Validate Dockerfile path
-    if not os.path.exists(args.dockerfile):
-        print(f"Error: Dockerfile not found at {args.dockerfile}")
-        return 1  # Return error code for Jenkins
-
-    # Initialise linter
     try:
-        linter = DockerfileLinter()
-    except Exception as e:
-        print(f"Error initializing linter: {e}")
-        return 1
+        # Validate Dockerfile path exists
+        if not os.path.exists(args.dockerfile):
+            raise FileNotFoundError(f"Dockerfile not found at {args.dockerfile}")
 
-    # Lint the file
-    try:
+        # Run the linter
+        linter = DockerfileLinter(args.rules)
         issues = linter.lint_file(args.dockerfile)
+
+        # Generate reports based on format
+        exit_code = 0  # Success by default
+        
+        if args.format in ['text', 'all']:
+            print(format_linter_errors(args.dockerfile, issues))
+            # Set exit code if critical or high severity issues found
+            if any(issue.rule.severity.value in ['CRITICAL', 'HIGH'] for issue in issues):
+                exit_code = 1
+
+        if args.format in ['json', 'all']:
+            json_report = {
+                'dockerfile': args.dockerfile,
+                'total_issues': len(issues),
+                'issues': [
+                    {
+                        'line_number': issue.line_number,
+                        'line_content': issue.line_content,
+                        'rule_id': issue.rule.id,
+                        'title': issue.rule.title,
+                        'description': issue.rule.description,
+                        'severity': issue.rule.severity.value,
+                        'suggestion': issue.rule.suggestion
+                    }
+                    for issue in issues
+                ]
+            }
+            print(json.dumps(json_report, indent=2))
+
+        if args.format in ['csv', 'all']:
+            csv_file = generate_csv_report(args.dockerfile, issues, args.output_dir)
+            print(f"\nCSV report generated: {csv_file}")
+
+        return exit_code
+
     except Exception as e:
-        print(f"Error linting Dockerfile: {e}")
-        return 1
-
-    # Generate reports based on format
-    exit_code = 0  # Success by default
-    
-    if args.format in ['text', 'all']:
-        print(format_linter_errors(args.dockerfile, issues))
-        # Set exit code if critical or high severity issues found
-        if any(issue.rule.severity.value in ['CRITICAL', 'HIGH'] for issue in issues):
-            exit_code = 1
-
-    if args.format in ['json', 'all']:
-        json_report = {
-            'dockerfile': args.dockerfile,
-            'total_issues': len(issues),
-            'issues': [
-                {
-                    'line_number': issue.line_number,
-                    'line_content': issue.line_content,
-                    'rule_id': issue.rule.id,
-                    'title': issue.rule.title,
-                    'description': issue.rule.description,
-                    'severity': issue.rule.severity.value,
-                    'suggestion': issue.rule.suggestion
-                }
-                for issue in issues
-            ]
+        error_data = {
+            "error": str(e),
+            "traceback": traceback.format_exc(),
+            "issues": []  # Maintain consistent structure
         }
-        print(json.dumps(json_report, indent=2))
-
-    if args.format in ['csv', 'all']:
-        csv_file = generate_csv_report(args.dockerfile, issues, args.output_dir)
-        print(f"\nCSV report generated: {csv_file}")
-
-    return exit_code
+        print(json.dumps(error_data))
+        return 1
 
 def format_linter_errors(dockerfile_path: str, issues: list) -> str:
     """Format linter errors in a clear, structured way.

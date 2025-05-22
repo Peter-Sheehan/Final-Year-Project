@@ -1,0 +1,553 @@
+[
+  {
+    "id": "BP086BFB42",
+    "title": "ENV",
+    "description": "To make new software easier to run, you can useENVto update thePATHenvironment variable for the software your container installs. For example,ENV PATH=/usr/local/nginx/bin:$PATHensures thatCMD [\"nginx\"]just works. TheENVinstruction is also useful for providing the required environment variables specific to services you want to containerize, such as Postgres’sPGDATA. Lastly,ENVcan also be used to set commonly used version numbers so that version bumps are easier to maintain, as seen in the following example: Similar to having constant variables in a program, as opposed to hard-coding values, this approach lets you change a singleENVinstruction to automatically bump the version of the software in your container. EachENVline creates a new intermediate layer, just likeRUNcommands. This means that even if you unset the environment variable in a future layer, it still persists in this layer and its value can be dumped. You can test this by creating a Dockerfile like the following, and then building it. To prevent this, and really unset the environment variable, use aRUNcommand with shell commands, to set, use, and unset the variable all in a single layer. You can separate your commands with;or&&. If you use the second method, and one of the commands fails, thedocker buildalso fails. This is usually a good idea. Using\\as a line continuation character for Linux Dockerfiles improves readability. You could also put all of the commands into a shell script and have theRUNcommand just run that shell script. For more information aboutENV, seeDockerfile reference for the ENV instruction.",
+    "checks": [
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*ENV\\s+PATH=.+?:\\$PATH",
+        "scope": "ENV",
+        "violation_if_true": false,
+        "condition_description": "Checks if ENV is used to correctly prepend to the PATH environment variable."
+      },
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*ENV\\s+\\w+=.+",
+        "scope": "ENV",
+        "violation_if_true": false,
+        "condition_description": "Ensures ENV is used to set environment variables."
+      },
+      {
+        "check_type": "manual",
+        "explanation": "Due to the linter's limitations, it cannot verify if ENV instructions are used to unset environment variables in a future layer effectively or if they are used in a way that makes version bumps easier. Manual review is required to ensure ENV instructions are used optimally, including the use of ENV for setting paths, providing service-specific variables, and facilitating easy software version updates.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "medium",
+    "suggestion": "Use ENV to prepend directories to the PATH environment variable to ensure software runs without specifying full paths. Also, use ENV to define necessary environment variables for services and to manage software versions easily. Avoid setting environment variables that should be unset later; instead, use RUN for temporary environment variable changes."
+  },
+  {
+    "id": "BP08E4DA4E",
+    "title": "CMD",
+    "description": "TheCMDinstruction should be used to run the software contained in your image, along with any arguments.CMDshould almost always be used in the form ofCMD [\"executable\", \"param1\", \"param2\"]. Thus, if the image is for a service, such as Apache and Rails, you would run something likeCMD [\"apache2\",\"-DFOREGROUND\"]. Indeed, this form of the instruction is recommended for any service-based image. In most other cases,CMDshould be given an interactive shell, such as bash, python and perl. For example,CMD [\"perl\", \"-de0\"],CMD [\"python\"], orCMD [\"php\", \"-a\"]. Using this form means that when you execute something likedocker run -it python, you’ll get dropped into a usable shell, ready to go.CMDshould rarely be used in the manner ofCMD [\"param\", \"param\"]in conjunction withENTRYPOINT, unless you and your expected users are already quite familiar with howENTRYPOINTworks. For more information aboutCMD, seeDockerfile reference for the CMD instruction.",
+    "checks": [
+      {
+        "check_type": "regex",
+        "pattern": "^CMD\\s+\\[\"[^\"]+\",.*\\]$",
+        "scope": "CMD",
+        "violation_if_true": false,
+        "condition_description": "Checks if CMD instruction is used in the exec form."
+      },
+      {
+        "check_type": "instruction_count",
+        "instruction": "CMD",
+        "condition": "greater_than",
+        "value": 1,
+        "violation_if_true": true,
+        "condition_description": "There should be only one CMD instruction in a Dockerfile."
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Ensure the CMD instruction is used in the exec form, e.g., CMD [\"executable\", \"param1\", \"param2\"], and that there is only one CMD instruction in the Dockerfile."
+  },
+  {
+    "id": "BP29F91BA8",
+    "title": "Rebuild your images often",
+    "description": "Docker images are immutable. Building an image is taking a snapshot of that image at that moment. That includes any base images, libraries, or other software you use in your build. To keep your images up-to-date and secure, make sure to rebuild your image often, with updated dependencies. To ensure that you're getting the latest versions of dependencies in your build, you can use the--no-cacheoption to avoid cache hits. The following Dockerfile uses the24.04tag of theubuntuimage. Over time, that tag may resolve to a different underlying version of theubuntuimage, as the publisher rebuilds the image with new security patches and updated libraries. Using the--no-cache, you can avoid cache hits and ensure a fresh download of base images and dependencies. Also considerpinning base image versions.",
+    "checks": [
+      {
+        "check_type": "manual",
+        "explanation": "Due to the linter's limitations in understanding Docker build context, flags like --no-cache, and the dynamic nature of image tags over time, this check requires manual review to ensure images are rebuilt often with updated dependencies and without relying on cached layers.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "medium",
+    "suggestion": "Manually ensure that your Docker images are rebuilt frequently to incorporate updated dependencies and base images. Consider using the --no-cache option during builds to avoid using cached layers and ensure that you are using the most up-to-date versions of base images and dependencies. Additionally, consider pinning base image versions to specific, updated tags to avoid unintended changes."
+  },
+  {
+    "id": "BP2AA02452",
+    "title": "Create ephemeral containers",
+    "description": "The image defined by your Dockerfile should generate containers that are as ephemeral as possible. Ephemeral means that the container can be stopped and destroyed, then rebuilt and replaced with an absolute minimum set up and configuration. Refer toProcessesunderThe Twelve-factor Appmethodology to get a feel for the motivations of running containers in such a stateless fashion.",
+    "checks": [
+      {
+        "check_type": "manual",
+        "explanation": "Ensuring containers are ephemeral requires a comprehensive understanding of the application's architecture, Dockerfile instructions, and potentially external configurations or scripts that are not discernible on a line-by-line basis. This includes verifying that state is not being stored in the container, ensuring that configurations are passed in at runtime rather than baked into the image, and that the container is designed to be disposable and quickly replaceable without loss of data.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Design your Dockerfile and application to support ephemeral containers. Avoid storing state or data within the container that would be lost upon its destruction. Utilize volumes for data persistence, and inject configuration through environment variables or external configuration files at runtime. Ensure that your container can be easily replaced by a new instance without manual intervention or setup."
+  },
+  {
+    "id": "BP32CAE590",
+    "title": "Choose the right base image",
+    "description": "The first step towards achieving a secure image is to choose the right base image. When choosing an image, ensure it's built from a trusted source and keep it small. When you pick your base image, look out for the badges indicating that the image is part of these programs. When building your own image from a Dockerfile, ensure you choose a minimal base image that matches your requirements. A smaller base image not only offers portability and fast downloads, but also shrinks the size of your image and minimizes the number of vulnerabilities introduced through the dependencies. You should also consider using two types of base image: one for building and unit testing, and another (typically slimmer) image for production. In the later stages of development, your image may not require build tools such as compilers, build systems, and debugging tools. A small image with minimal dependencies can considerably lower the attack surface.",
+    "checks": [
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*FROM\\s+scratch$",
+        "scope": "FROM",
+        "violation_if_true": false,
+        "condition_description": "Checks if the FROM instruction specifies 'scratch' for minimal base image."
+      },
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*FROM\\s+alpine",
+        "scope": "FROM",
+        "violation_if_true": false,
+        "condition_description": "Checks if the FROM instruction uses 'alpine' for a minimal base image."
+      },
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*FROM\\s+.*:latest",
+        "scope": "FROM",
+        "violation_if_true": true,
+        "condition_description": "Using 'latest' tag for base image."
+      },
+      {
+        "check_type": "manual",
+        "explanation": "Due to the linter's limitations, it cannot verify if the chosen base image is from a trusted source, nor can it determine if the image is part of a recognized program. Additionally, choosing a base image for different stages of development (build/test vs. production) requires understanding the application's architecture and dependencies, which is beyond the linter's capabilities.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Choose a minimal base image like 'scratch' or 'alpine' for your Dockerfile to minimize vulnerabilities and ensure it's from a trusted source. Avoid using the ':latest' tag to prevent unexpected changes. Consider manual review to ensure the base image is appropriate for the application's stage of development and security requirements."
+  },
+  {
+    "id": "BP496813AA",
+    "title": "Sort multi-line arguments",
+    "description": "Whenever possible, sort multi-line arguments alphanumerically to make maintenance easier. This helps to avoid duplication of packages and make the list much easier to update. This also makes PRs a lot easier to read and review. Adding a space before a backslash (\\) helps as well. Here’s an example from thebuildpack-deps image:",
+    "checks": [
+      {
+        "check_type": "manual",
+        "explanation": "Due to the linter's inability to parse Dockerfile structure or understand context across multiple lines, verifying that multi-line arguments are sorted alphanumerically requires manual review.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "low",
+    "suggestion": "Manually review multi-line arguments in RUN instructions to ensure they are sorted alphanumerically. This includes checking for alphabetical order and ensuring a space is present before a backslash for line continuation."
+  },
+  {
+    "id": "BP4C08BC02",
+    "title": "ONBUILD",
+    "description": "AnONBUILDcommand executes after the current Dockerfile build completes.ONBUILDexecutes in any child image derivedFROMthe current image. Think of theONBUILDcommand as an instruction that the parent Dockerfile gives to the child Dockerfile. A Docker build executesONBUILDcommands before any command in a child Dockerfile. ONBUILDis useful for images that are going to be builtFROMa given image. For example, you would useONBUILDfor a language stack image that builds arbitrary user software written in that language within the Dockerfile, as you can see inRuby’sONBUILDvariants. Images built withONBUILDshould get a separate tag. For example,ruby:1.9-onbuildorruby:2.0-onbuild. Be careful when puttingADDorCOPYinONBUILD. The onbuild image fails catastrophically if the new build's context is missing the resource being added. Adding a separate tag, as recommended above, helps mitigate this by allowing the Dockerfile author to make a choice. For more information aboutONBUILD, seeDockerfile reference for the ONBUILD instruction.",
+    "checks": [
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*FROM\\s+[^\\s]+-onbuild\\b",
+        "scope": "FROM",
+        "violation_if_true": false,
+        "condition_description": "Checks if the FROM instruction specifies an image with an '-onbuild' tag."
+      },
+      {
+        "check_type": "keyword",
+        "keywords": [
+          "ONBUILD"
+        ],
+        "scope": "ONBUILD",
+        "condition": "must_exist",
+        "violation_if_true": false,
+        "condition_description": "Ensures the presence of the ONBUILD instruction."
+      },
+      {
+        "check_type": "manual",
+        "explanation": "Manual review is required to ensure that ONBUILD instructions are used appropriately, especially when adding resources with ADD or COPY, and to verify that the child Dockerfile can handle the ONBUILD triggers correctly.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "medium",
+    "suggestion": "Ensure that images intended for use as a base with ONBUILD instructions have an '-onbuild' tag in their FROM line. Verify manually that ONBUILD instructions are used correctly and that child Dockerfiles are prepared for these triggers."
+  },
+  {
+    "id": "BP4F995E92",
+    "title": "ADD or COPY",
+    "description": "ADDandCOPYare functionally similar.COPYsupports basic copying of files into the container, from thebuild contextor from a stage in amulti-stage build.ADDsupports features for fetching files from remote HTTPS and Git URLs, and extracting tar files automatically when adding files from the build context. You'll mostly want to useCOPYfor copying files from one stage to another in a multi-stage build. If you need to add files from the build context to the container temporarily to execute aRUNinstruction, you can often substitute theCOPYinstruction with a bind mount instead. For example, to temporarily add arequirements.txtfile for aRUN pip installinstruction: Bind mounts are more efficient thanCOPYfor including files from the build context in the container. Note that bind-mounted files are only added temporarily for a singleRUNinstruction, and don't persist in the final image. If you need to include files from the build context in the final image, useCOPY. TheADDinstruction is best for when you need to download a remote artifact as part of your build.ADDis better than manually adding files using something likewgetandtar, because it ensures a more precise build cache.ADDalso has built-in support for checksum validation of the remote resources, and a protocol for parsing branches, tags, and subdirectories fromGit URLs. The following example usesADDto download a .NET installer. Combined with multi-stage builds, only the .NET runtime remains in the final stage, no intermediate files. For more information aboutADDorCOPY, see the following:",
+    "checks": [
+      {
+        "check_type": "keyword",
+        "keywords": [
+          "ADD"
+        ],
+        "scope": "ADD",
+        "condition": "must_exist",
+        "violation_if_true": false,
+        "condition_description": "Checks for the presence of ADD instruction for downloading remote artifacts."
+      },
+      {
+        "check_type": "keyword",
+        "keywords": [
+          "COPY"
+        ],
+        "scope": "COPY",
+        "condition": "must_exist",
+        "violation_if_true": false,
+        "condition_description": "Ensures COPY is used for copying files from build context or other stages in multi-stage builds."
+      },
+      {
+        "check_type": "manual",
+        "explanation": "Due to the linter's limitations, it cannot verify if ADD is used appropriately for remote files only or if COPY is preferred for local files. Manual review is required to ensure the correct use of ADD and COPY instructions based on their specific use cases and advantages.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "medium",
+    "suggestion": "Use COPY for copying local files and ADD for remote files or tar extraction. Avoid using ADD for local files to prevent unexpected behavior."
+  },
+  {
+    "id": "BP4FB971F0",
+    "title": "EXPOSE",
+    "description": "TheEXPOSEinstruction indicates the ports on which a container listens for connections. Consequently, you should use the common, traditional port for your application. For example, an image containing the Apache web server would useEXPOSE 80, while an image containing MongoDB would useEXPOSE 27017and so on. For external access, your users can executedocker runwith a flag indicating how to map the specified port to the port of their choice. For container linking, Docker provides environment variables for the path from the recipient container back to the source (for example,MYSQL_PORT_3306_TCP). For more information aboutEXPOSE, seeDockerfile reference for the EXPOSE instruction.",
+    "checks": [
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*EXPOSE\\s+(80|443|27017)\\s*$",
+        "scope": "EXPOSE",
+        "violation_if_true": false,
+        "condition_description": "Checks if EXPOSE uses common ports (80, 443 for web servers, 27017 for MongoDB)."
+      }
+    ],
+    "severity": "info",
+    "suggestion": "Ensure the EXPOSE instruction uses a common, traditional port for the application it serves. For example, use 'EXPOSE 80' for Apache web server images, 'EXPOSE 27017' for MongoDB images."
+  },
+  {
+    "id": "BP5FE7DA5A",
+    "title": "Create reusable stages",
+    "description": "If you have multiple images with a lot in common, consider creating a reusable stage that includes the shared components, and basing your unique stages on that. Docker only needs to build the common stage once. This means that your derivative images use memory on the Docker host more efficiently and load more quickly. It's also easier to maintain a common base stage (\"Don't repeat yourself\"), than it is to have multiple different stages doing similar things.",
+    "checks": [
+      {
+        "check_type": "instruction_count",
+        "instruction": "FROM",
+        "condition": "less_than",
+        "value": 2,
+        "violation_if_true": true,
+        "condition_description": "Checks if there are fewer than two FROM instructions, suggesting a potential missed opportunity for multi-stage builds."
+      },
+      {
+        "check_type": "manual",
+        "explanation": "Due to the linter's limitations, it cannot verify if a common stage is defined and reused across multiple stages within the Dockerfile. This requires understanding the Dockerfile's structure and the context of how stages are used, which goes beyond simple line-by-line analysis.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "medium",
+    "suggestion": "Consider defining a common stage with shared components used by multiple images. Use this as a base for other stages to improve efficiency and maintainability."
+  },
+  {
+    "id": "BP64B8A7E2",
+    "title": "LABEL",
+    "description": "You can add labels to your image to help organize images by project, record licensing information, to aid in automation, or for other reasons. For each label, add a line beginning withLABELwith one or more key-value pairs. The following examples show the different acceptable formats. Explanatory comments are included inline. Strings with spaces must be quoted or the spaces must be escaped. Inner quote characters (\\\"), must also be escaped. For example: An image can have more than one label. Prior to Docker 1.10, it was recommended to combine all labels into a singleLABELinstruction, to prevent extra layers from being created. This is no longer necessary, but combining labels is still supported. For example: The above example can also be written as: SeeUnderstanding object labelsfor guidelines about acceptable label keys and values. For information about querying labels, refer to the items related to filtering inManaging labels on objects. See alsoLABELin the Dockerfile reference.",
+    "checks": [
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*LABEL\\s+([\\w\\.-]+\\s*=\\s*\"[^\"]*\"\\s*)+$",
+        "scope": "LABEL",
+        "violation_if_true": false,
+        "condition_description": "Checks if LABEL instructions are properly formatted with key-value pairs."
+      },
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*LABEL\\s+([\\w\\.-]+\\s*=\\s*'[^']*'\\s*)+$",
+        "scope": "LABEL",
+        "violation_if_true": false,
+        "condition_description": "Checks if LABEL instructions use single quotes for values with spaces."
+      },
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*LABEL\\s+.*\\s+.*$",
+        "scope": "LABEL",
+        "violation_if_true": true,
+        "condition_description": "Detects LABEL instructions that might not be using key-value pairs correctly."
+      }
+    ],
+    "severity": "low",
+    "suggestion": "Ensure each LABEL instruction uses a key-value pair format. For strings with spaces, ensure they are quoted. If using double quotes, escape inner double quotes."
+  },
+  {
+    "id": "BP6EB0C612",
+    "title": "USER",
+    "description": "If a service can run without privileges, useUSERto change to a non-root user. Start by creating the user and group in the Dockerfile with something like the following example: Avoid installing or usingsudoas it has unpredictable TTY and signal-forwarding behavior that can cause problems. If you absolutely need functionality similar tosudo, such as initializing the daemon asrootbut running it as non-root, consider using“gosu”. Lastly, to reduce layers and complexity, avoid switchingUSERback and forth frequently. For more information aboutUSER, seeDockerfile reference for the USER instruction.",
+    "checks": [
+      {
+        "check_type": "instruction_count",
+        "instruction": "USER",
+        "condition": "less_than",
+        "value": 1,
+        "violation_if_true": true,
+        "condition_description": "Ensures at least one USER instruction exists to switch from root."
+      },
+      {
+        "check_type": "keyword",
+        "keywords": [
+          "sudo"
+        ],
+        "scope": "RUN",
+        "condition": "must_exist",
+        "violation_if_true": true,
+        "condition_description": "Check for the presence of 'sudo' which should be avoided."
+      },
+      {
+        "check_type": "manual",
+        "explanation": "Due to the linter's limitations, it cannot verify if a non-root user was properly created before switching to it with the USER instruction. Manual review is required to ensure a user and group are correctly established in the Dockerfile.",
+        "violation_if_true": false
+      },
+      {
+        "check_type": "manual",
+        "explanation": "The linter cannot assess the use of 'gosu' for scenarios where sudo-like functionality is absolutely necessary. This requires manual review to ensure 'gosu' is used appropriately instead of 'sudo'.",
+        "violation_if_true": false
+      },
+      {
+        "check_type": "manual",
+        "explanation": "Switching USER back and forth can introduce complexity and additional layers. This pattern requires manual review as the linter cannot track USER instruction usage frequency or context.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Ensure the Dockerfile includes at least one USER instruction to switch to a non-root user. Avoid using 'sudo' within RUN instructions. Consider manual review for proper user and group setup, appropriate use of 'gosu', and minimizing USER switches."
+  },
+  {
+    "id": "BP844BB562",
+    "title": "Use multi-stage builds",
+    "description": "Multi-stage builds let you reduce the size of your final image, by creating a cleaner separation between the building of your image and the final output. Split your Dockerfile instructions into distinct stages to make sure that the resulting output only contains the files that are needed to run the application. Using multiple stages can also let you build more efficiently by executing build steps in parallel. SeeMulti-stage buildsfor more information.",
+    "checks": [
+      {
+        "check_type": "instruction_count",
+        "instruction": "FROM",
+        "condition": "less_than",
+        "value": 2,
+        "violation_if_true": true,
+        "condition_description": "Checks if there are fewer than two FROM instructions, suggesting a potential missed opportunity for multi-stage builds."
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Split your Dockerfile into multiple stages by using multiple FROM instructions. Each stage can use a different base image, or use the same one with different build contexts. This approach allows you to separate the build environment from the runtime environment, reducing the final image size and improving build efficiency."
+  },
+  {
+    "id": "BP8E7F00CF",
+    "title": "FROM",
+    "description": "Whenever possible, use current official images as the basis for your images. Docker recommends theAlpine imageas it is tightly controlled and small in size (currently under 6 MB), while still being a full Linux distribution. For more information about theFROMinstruction, seeDockerfile reference for the FROM instruction.",
+    "checks": [
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*FROM\\s+alpine(:[\\w.-]+)?\\s*(#.*)?$",
+        "scope": "FROM",
+        "violation_if_true": false,
+        "condition_description": "Checks if the FROM instruction specifies an Alpine image, potentially with a version tag."
+      },
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*FROM\\s+[^\\s]+:latest\\s*(#.*)?$",
+        "scope": "FROM",
+        "violation_if_true": true,
+        "condition_description": "Detects usage of the 'latest' tag which should be avoided for more predictable builds."
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Use an official Alpine image as the base for your Dockerfile to minimize size and ensure security. Avoid using the 'latest' tag to make builds more predictable."
+  },
+  {
+    "id": "BP9166D7E9",
+    "title": "WORKDIR",
+    "description": "For clarity and reliability, you should always use absolute paths for yourWORKDIR. Also, you should useWORKDIRinstead of proliferating instructions likeRUN cd … && do-something, which are hard to read, troubleshoot, and maintain. For more information aboutWORKDIR, seeDockerfile reference for the WORKDIR instruction.",
+    "checks": [
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*WORKDIR\\s+[^/].*",
+        "scope": "WORKDIR",
+        "violation_if_true": true,
+        "condition_description": "Detects WORKDIR using a relative path."
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Use absolute paths when setting the WORKDIR. For example, use WORKDIR /app instead of WORKDIR app."
+  },
+  {
+    "id": "BP9F076259",
+    "title": "Leverage build cache",
+    "description": "When building an image, Docker steps through the instructions in your Dockerfile, executing each in the order specified. For each instruction, Docker checks whether it can reuse the instruction from the build cache. Understanding how the build cache works, and how cache invalidation occurs, is critical for ensuring faster builds. For more information about the Docker build cache and how to optimize your builds, seeDocker build cache.",
+    "checks": [
+      {
+        "check_type": "manual",
+        "explanation": "Due to the linter's inability to understand Dockerfile structure, instruction order, or context across multiple instructions, assessing the effective use of the build cache requires manual review. This includes verifying that instructions are ordered from less frequently changed to more frequently changed to maximize cache utilization, and ensuring that cache busting is done intentionally.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Review your Dockerfile to ensure instructions are ordered to maximize cache reuse. Instructions that change less frequently should be placed before those that change more frequently. Additionally, avoid unnecessary cache busting by carefully managing instruction changes."
+  },
+  {
+    "id": "BPAD173E04",
+    "title": "RUN",
+    "description": "Split long or complexRUNstatements on multiple lines separated with backslashes to make your Dockerfile more readable, understandable, and maintainable. For example, you can chain commands with the&&operator, and use escape characters to break long commands into multiple lines. By default, backslash escapes a newline character, but you can change it with theescapedirective. You can also use here documents to run multiple commands without chaining them with a pipeline operator: For more information aboutRUN, seeDockerfile reference for the RUN instruction. One common use case forRUNinstructions in Debian-based images is to install software usingapt-get. Becauseapt-getinstalls packages, theRUN apt-getcommand has several counter-intuitive behaviors to look out for. Always combineRUN apt-get updatewithapt-get installin the sameRUNstatement. For example: Usingapt-get updatealone in aRUNstatement causes caching issues and subsequentapt-get installinstructions to fail. For example, this issue will occur in the following Dockerfile: After building the image, all layers are in the Docker cache. Suppose you later modifyapt-get installby adding an extra package as shown in the following Dockerfile: Docker sees the initial and modified instructions as identical and reuses the cache from previous steps. As a result theapt-get updateisn't executed because the build uses the cached version. Because theapt-get updateisn't run, your build can potentially get an outdated version of thecurlandnginxpackages. UsingRUN apt-get update && apt-get install -y --no-install-recommendsensures your Dockerfile installs the latest package versions with no further coding or manual intervention. This technique is known as cache busting. You can also achieve cache busting by specifying a package version. This is known as version pinning. For example: Version pinning forces the build to retrieve a particular version regardless of what’s in the cache. This technique can also reduce failures due to unanticipated changes in required packages. Below is a well-formedRUNinstruction that demonstrates all theapt-getrecommendations. Thes3cmdargument specifies a version1.1.*. If the image previously used an older version, specifying the new one causes a cache bust ofapt-get updateand ensures the installation of the new version. Listing packages on each line can also prevent mistakes in package duplication. In addition, when you clean up the apt cache by removing/var/lib/apt/listsit reduces the image size, since the apt cache isn't stored in a layer. Since theRUNstatement starts withapt-get update, the package cache is always refreshed prior toapt-get install. Official Debian and Ubuntu imagesautomatically runapt-get clean, so explicit invocation is not required. SomeRUNcommands depend on the ability to pipe the output of one command into another, using the pipe character (|), as in the following example: Docker executes these commands using the/bin/sh -cinterpreter, which only evaluates the exit code of the last operation in the pipe to determine success. In the example above, this build step succeeds and produces a new image so long as thewc -lcommand succeeds, even if thewgetcommand fails. If you want the command to fail due to an error at any stage in the pipe, prependset -o pipefail &&to ensure that an unexpected error prevents the build from inadvertently succeeding. For example:",
+    "checks": [
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*RUN\\s+.*\\\\$",
+        "scope": "RUN",
+        "violation_if_true": false,
+        "condition_description": "Checks if RUN commands are split across multiple lines using backslashes for readability."
+      },
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*RUN\\s+apt-get\\s+update\\s+&&\\s+apt-get\\s+install",
+        "scope": "RUN",
+        "violation_if_true": true,
+        "condition_description": "Detects RUN apt-get update not combined with install in a single RUN statement."
+      },
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*RUN\\s+.*--no-install-recommends",
+        "scope": "RUN",
+        "violation_if_true": false,
+        "condition_description": "Ensures apt-get install commands include the --no-install-recommends flag."
+      },
+      {
+        "check_type": "manual",
+        "explanation": "Due to the linter's limitations, it cannot verify if multi-line RUN commands are properly formatted with logical operators or if here documents are used correctly. Manual review is required to ensure complex RUN statements are readable and maintainable.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "medium",
+    "suggestion": "Ensure long or complex RUN instructions are split across multiple lines using backslashes for better readability. Combine apt-get update with apt-get install in the same RUN statement to avoid caching issues. Use --no-install-recommends with apt-get install to minimize the image size. Review complex RUN statements manually for proper formatting and maintainability."
+  },
+  {
+    "id": "BPAEDF7F2F",
+    "title": "Exclude with .dockerignore",
+    "description": "To exclude files not relevant to the build, without restructuring your source repository, use a.dockerignorefile. This file supports exclusion patterns similar to.gitignorefiles. For example, to exclude all files with the.mdextension: For information on creating one, seeDockerignore file.",
+    "checks": [
+      {
+        "check_type": "file_check",
+        "filename": ".dockerignore",
+        "condition": "must_exist",
+        "violation_if_true": false,
+        "condition_description": "Check if a .dockerignore file exists in the same directory as the Dockerfile."
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Create a .dockerignore file in the same directory as your Dockerfile to exclude files not relevant to the build, such as temporary files or version control directories. This helps to reduce the build context size and improve build performance."
+  },
+  {
+    "id": "BPAF7FDF55",
+    "title": "Don't install unnecessary packages",
+    "description": "Avoid installing extra or unnecessary packages just because they might be nice to have. For example, you don’t need to include a text editor in a database image. When you avoid installing extra or unnecessary packages, your images have reduced complexity, reduced dependencies, reduced file sizes, and reduced build times.",
+    "checks": [
+      {
+        "check_type": "keyword",
+        "keywords": [
+          "vim",
+          "nano",
+          "emacs"
+        ],
+        "scope": "RUN",
+        "condition": "must_exist",
+        "violation_if_true": true,
+        "condition_description": "Checks for the installation of common text editors which are usually unnecessary in production images."
+      },
+      {
+        "check_type": "keyword",
+        "keywords": [
+          "build-essential",
+          "gcc",
+          "make"
+        ],
+        "scope": "RUN",
+        "condition": "must_exist",
+        "violation_if_true": true,
+        "condition_description": "Detects the installation of build tools like compilers which are often not needed in final images."
+      }
+    ],
+    "severity": "medium",
+    "suggestion": "Review the Dockerfile to ensure only necessary packages are installed. Consider using multi-stage builds to include tools needed for building your application but not required in the final image."
+  },
+  {
+    "id": "BPB8CA77FB",
+    "title": "Pin base image versions",
+    "description": "Image tags are mutable, meaning a publisher can update a tag to point to a new image. This is useful because it lets publishers update tags to point to newer versions of an image. And as an image consumer, it means you automatically get the new version when you re-build your image. For example, if you specifyFROM alpine:3.19in your Dockerfile,3.19resolves to the latest patch version for3.19. At one point in time, the3.19tag might point to version 3.19.1 of the image. If you rebuild the image 3 months later, the same tag might point to a different version, such as 3.19.4. This publishing workflow is best practice, and most publishers use this tagging strategy, but it isn't enforced. The downside with this is that you're not guaranteed to get the same for every build. This could result in breaking changes, and it means you also don't have an audit trail of the exact image versions that you're using. To fully secure your supply chain integrity, you can pin the image version to a specific digest. By pinning your images to a digest, you're guaranteed to always use the same image version, even if a publisher replaces the tag with a new image. For example, the following Dockerfile pins the Alpine image to the same tag as earlier,3.19, but this time with a digest reference as well. With this Dockerfile, even if the publisher updates the3.19tag, your builds would still use the pinned image version:13b7e62e8df80264dbb747995705a986aa530415763a6c58f84a3ca8af9a5bcd. While this helps you avoid unexpected changes, it's also more tedious to have to look up and include the image digest for base image versions manually each time you want to update it. And you're opting out of automated security fixes, which is likely something you want to get. Docker Scout's defaultUp-to-Date Base Imagespolicychecks whether the base image version you're using is in fact the latest version. This policy also checks if pinned digests in your Dockerfile correspond to the correct version. If a publisher updates an image that you've pinned, the policy evaluation returns a non-compliant status, indicating that you should update your image. Docker Scout also supports an automated remediation workflow for keeping your base images up-to-date. When a new image digest is available, Docker Scout can automatically raise a pull request on your repository to update your Dockerfiles to use the latest version. This is better than using a tag that changes the version automatically, because you're in control and you have an audit trail of when and how the change occurred. For more information about automatically updating your base images with Docker Scout, seeRemediation.",
+    "checks": [
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*FROM\\s+[\\w\\d.-]+(@sha256:[a-f0-9]{64})\\s*(?:\\s+|$)",
+        "scope": "FROM",
+        "violation_if_true": false,
+        "condition_description": "Check if the FROM instruction specifies an image pinned by digest."
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Ensure that the base image in the FROM instruction is pinned to a specific digest to guarantee reproducibility and avoid unexpected changes."
+  },
+  {
+    "id": "BPD5DA0774",
+    "title": "Build and test your images in CI",
+    "description": "When you check in a change to source control or create a pull request, useGitHub Actionsor another CI/CD pipeline to automatically build and tag a Docker image and test it.",
+    "checks": [
+      {
+        "check_type": "manual",
+        "explanation": "Automated checks cannot verify if Docker images are built and tested in a CI/CD pipeline like GitHub Actions due to the linter's inability to access external CI/CD configuration files or understand complex workflows.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Ensure your project's CI/CD pipeline configuration (e.g., .github/workflows/docker.yml for GitHub Actions) includes steps to build the Docker image and run tests on every commit or pull request."
+  },
+  {
+    "id": "BPDE4F1AAB",
+    "title": "VOLUME",
+    "description": "You should use theVOLUMEinstruction to expose any database storage area, configuration storage, or files and folders created by your Docker container. You are strongly encouraged to useVOLUMEfor any combination of mutable or user-serviceable parts of your image. For more information aboutVOLUME, seeDockerfile reference for the VOLUME instruction.",
+    "checks": [
+      {
+        "check_type": "instruction_count",
+        "instruction": "VOLUME",
+        "condition": "less_than",
+        "value": 1,
+        "violation_if_true": true,
+        "condition_description": "Ensures at least one VOLUME instruction exists to expose mutable or user-serviceable parts of the image."
+      }
+    ],
+    "severity": "medium",
+    "suggestion": "Add at least one VOLUME instruction to your Dockerfile to expose any database storage area, configuration storage, or files/folders created by your Docker container."
+  },
+  {
+    "id": "BPFAEF57A2",
+    "title": "ENTRYPOINT",
+    "description": "The best use forENTRYPOINTis to set the image's main command, allowing that image to be run as though it was that command, and then useCMDas the default flags. The following is an example of an image for the command line tools3cmd: You can use the following command to run the image and show the command's help: Or, you can use the right parameters to execute a command, like in the following example: This is useful because the image name can double as a reference to the binary as shown in the command above. TheENTRYPOINTinstruction can also be used in combination with a helper script, allowing it to function in a similar way to the command above, even when starting the tool may require more than one step. For example, thePostgres Official Imageuses the following script as itsENTRYPOINT: This script usestheexecBash commandso that the final running application becomes the container's PID 1. This allows the application to receive any Unix signals sent to the container. For more information, see theENTRYPOINTreference. In the following example, a helper script is copied into the container and run viaENTRYPOINTon container start: This script lets you interact with Postgres in several ways. It can simply start Postgres: Or, you can use it to run Postgres and pass parameters to the server: Lastly, you can use it to start a totally different tool, such as Bash: For more information aboutENTRYPOINT, seeDockerfile reference for the ENTRYPOINT instruction.",
+    "checks": [
+      {
+        "check_type": "regex",
+        "pattern": "^\\s*ENTRYPOINT\\s+.*",
+        "scope": "ENTRYPOINT",
+        "violation_if_true": false,
+        "condition_description": "Checks if ENTRYPOINT instruction exists to set the main command of the image."
+      },
+      {
+        "check_type": "instruction_count",
+        "instruction": "ENTRYPOINT",
+        "condition": "less_than",
+        "value": 1,
+        "violation_if_true": true,
+        "condition_description": "Ensures at least one ENTRYPOINT instruction exists."
+      },
+      {
+        "check_type": "instruction_count",
+        "instruction": "CMD",
+        "condition": "greater_than",
+        "value": 1,
+        "violation_if_true": true,
+        "condition_description": "There should be only one CMD instruction in a Dockerfile, used as default flags for ENTRYPOINT."
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Ensure your Dockerfile contains an ENTRYPOINT instruction to define the container's main command. Use CMD to provide default flags for the ENTRYPOINT. There should be exactly one ENTRYPOINT and at most one CMD instruction."
+  },
+  {
+    "id": "BPFE9F359F",
+    "title": "Decouple applications",
+    "description": "Each container should have only one concern. Decoupling applications into multiple containers makes it easier to scale horizontally and reuse containers. For instance, a web application stack might consist of three separate containers, each with its own unique image, to manage the web application, database, and an in-memory cache in a decoupled manner. Limiting each container to one process is a good rule of thumb, but it's not a hard and fast rule. For example, not only can containers bespawned with an init process, some programs might spawn additional processes of their own accord. For instance,Celerycan spawn multiple worker processes, andApachecan create one process per request. Use your best judgment to keep containers as clean and modular as possible. If containers depend on each other, you can useDocker container networksto ensure that these containers can communicate.",
+    "checks": [
+      {
+        "check_type": "manual",
+        "explanation": "Due to the linter's inability to understand application architecture, decoupling of applications, or the context across multiple lines and Docker instructions, this best practice requires a manual review to ensure each container is focused on a single concern and properly decoupled from other application components.",
+        "violation_if_true": false
+      }
+    ],
+    "severity": "high",
+    "suggestion": "Review your Dockerfile and application architecture to ensure that each container is dedicated to a single concern. If your application consists of multiple components (e.g., web server, database, cache), consider splitting these into separate containers to facilitate scaling and improve maintainability. Utilize Docker container networks for inter-container communication."
+  }
+]

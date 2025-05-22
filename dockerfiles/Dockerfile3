@@ -1,0 +1,33 @@
+FROM python:latest
+
+# Violate: Avoid apt-get update alone
+RUN apt-get update
+
+# Violate: Install unnecessary, no --no-install-recommends, no version pin, no cleanup
+RUN apt-get install -y vim
+
+# Violate: RUN cd
+RUN mkdir -p /app && cd /app
+
+# Violate: Relative WORKDIR
+WORKDIR app
+
+# Violate: ADD instead of COPY
+ADD requirements.txt .
+
+# Violate: Combine multiple RUNs
+RUN pip install flask
+RUN pip install gunicorn
+
+# Violate: Copy without .dockerignore (potentially)
+ADD . .
+
+# Violate: Empty ENV
+ENV MY_VAR=
+
+# Violate: CMD with multiple processes
+CMD ["python", "app.py"]
+
+# Violate: No USER instruction (runs as root)
+
+EXPOSE 8080 

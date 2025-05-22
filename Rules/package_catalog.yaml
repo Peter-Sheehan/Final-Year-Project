@@ -1,0 +1,122 @@
+# package_catalog.yaml
+# This file defines known compatible package versions for different distributions.
+# It is used by the _package_version_ok method in main.py to validate
+# version pins suggested by the AI in optimized Dockerfiles.
+#
+# Structure:
+# distro_name:
+#   package_name_1:
+#     versions:
+#       - "exact_version_string"
+#       - "pattern_with_wildcard_*" # Uses fnmatch for matching
+#   package_name_2:
+#     # Alternatively, a direct list of exact versions (less common for this tool's fnmatch usage)
+#     - "exact_version_1"
+#     - "exact_version_2"
+#
+# Add more distributions, packages, and versions as needed.
+
+debian:
+  # Example for Debian (e.g., Debian 11 "bullseye", Debian 12 "bookworm")
+  python3:
+    versions:
+      - "3.9.*" # For Bullseye
+      - "3.11.*" # For Bookworm
+      - "3.7.*" # For Buster (older, for example)
+  curl:
+    versions:
+      - "7.74.*" # Bullseye
+      - "7.88.*" # Bookworm
+  git:
+    versions:
+      - "1:2.30.*" # Bullseye
+      - "1:2.39.*" # Bookworm
+  nginx:
+    versions:
+      - "1.18.*"
+      - "1.20.*"
+      - "1.22.*"
+      - "1.24.*" # Example for newer Nginx on recent Debians
+  nodejs:
+    versions:
+      - "12.22.*" # Node.js LTS from Bullseye
+      - "18.*" # Node.js LTS from Bookworm (example)
+      - "20.*" # More recent Node.js versions
+
+ubuntu:
+  # Example for Ubuntu (e.g., Ubuntu 20.04 "focal", Ubuntu 22.04 "jammy")
+  python3:
+    versions:
+      - "3.8.*" # Focal
+      - "3.10.*" # Jammy
+      - "3.11.*" # Likely available in Jammy updates or newer Ubuntu
+      - "3.12.*" # For newer Ubuntu releases
+  curl:
+    versions:
+      - "7.68.*" # Focal
+      - "7.81.*" # Jammy
+  git:
+    versions:
+      - "1:2.25.*" # Focal
+      - "1:2.34.*" # Jammy
+  nginx:
+    versions: # Ubuntu often tracks Nginx versions closely or slightly differently than Debian
+      - "1.18.0*" # Common on Focal/Jammy initial, but many variations exist
+      - "1.2*" # Broader pattern for newer Nginx versions
+  nodejs:
+    versions: # Ubuntu provides various Node.js versions, often through nodesource or its own archives
+      - "12.*"
+      - "14.*"
+      - "16.*"
+      - "18.*"
+      - "20.*"
+      - "22.*" # Future-proofing for upcoming LTS
+
+alpine:
+  # Alpine package versions are often very specific due to its rolling nature and repository structure.
+  # Using exact versions or very tight patterns is recommended.
+  # Check packages.alpinelinux.org for current versions in specific Alpine releases.
+  python3:
+    versions:
+      # For Alpine 3.16 (example)
+      - "3.10.5-r0"
+      - "3.10.*"
+      # For Alpine 3.17 (example)
+      - "3.10.9-r0"
+      - "3.11.2-r0"
+      # For Alpine 3.18 (example)
+      - "3.11.4-r0"
+      - "3.11.*"
+      # For Alpine 3.19 (example)
+      - "3.11.6-r0"
+      - "3.12.0*"
+  curl:
+    versions:
+      - "7.85.0-r0" # Alpine 3.16 example
+      - "7.87.0-r1" # Alpine 3.17 example
+      - "8.0.1-r0" # Alpine 3.18 example
+      - "8.12.*" # Alpine 3.19 example
+  git:
+    versions:
+      - "2.36.2-r0" # Alpine 3.16 example
+      - "2.38.2-r0" # Alpine 3.17 example
+      - "2.40.0-r0" # Alpine 3.18 example
+      - "2.43.*" # Alpine 3.19 example
+  nginx: # Nginx on Alpine
+    versions:
+      - "1.22.0-r0"
+      - "1.22.*"
+      - "1.24.*" # For newer Alpine releases
+      - "1.25.*"
+  nodejs: # Node.js on Alpine (often an LTS version)
+    versions:
+      - "16.17.*"
+      - "18.12.*"
+      - "18.16.*"
+      - "20.*"
+
+  # Example of a package with a direct list of exact versions (less common for fnmatch usage)
+  example-exact-package:
+    - "1.0.0"
+    - "1.0.1"
+    - "1.1.0"
