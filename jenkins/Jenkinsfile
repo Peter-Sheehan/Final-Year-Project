@@ -63,8 +63,14 @@ pipeline {
         stage('Analyze Target Dockerfile') {
             steps {
                 script {
+                    echo "DEBUG: Entered 'Analyze Target Dockerfile' script block."
+                    def preWithCredVar = "Pre-WithCred"
+                    echo "DEBUG: preWithCredVar = ${preWithCredVar}"
+
                     withCredentials([string(credentialsId: '84c11c8a-1308-47b7-81ed-869b3a635c8e', variable: 'OPENAI_API_KEY_FROM_JENKINS')]) {
+                        echo "DEBUG: Entered withCredentials block."
                         bat "mkdir \"${REPORTS_DIR}\""
+                        echo "DEBUG: mkdir command attempted."
                         def debugVar = "THIS MUST PRINT"
                         echo "DEBUG MARKER 1: debugVar is ${debugVar}"
                         echo "DEBUG MARKER 2: OPENAI_API_KEY_FROM_JENKINS is set: ${env.OPENAI_API_KEY_FROM_JENKINS != null}"
@@ -78,8 +84,6 @@ pipeline {
                         def reportOptimized = "${REPORTS_DIR}\\optimized.dockerfile"
                         def reportExplanation = "${REPORTS_DIR}\\explanation.txt"
 
-                        // Using triple-double-quotes for clarity and to help the Groovy parser with complex strings.
-                        // The actual command passed to 'bat' will be a single line.
                         def commandParts = [
                             "set OPENAI_API_KEY=${OPENAI_API_KEY_FROM_JENKINS}",
                             "&&",
