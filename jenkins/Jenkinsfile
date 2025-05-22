@@ -65,11 +65,11 @@ pipeline {
                     def targetFile = new File(new File(TARGET_REPO_DIR), params.DOCKERFILE_PATH_IN_TARGET_REPO.replace('/', File.separator))
                     def targetDockerfileInClonedRepoPath = targetFile.getCanonicalPath()
 
-                    def venvActivate = "${VENV_DIR}\Scripts\activate"
-                    def mainScript = "${WORKSPACE}\main.py"
-                    def reportCsv = "${REPORTS_DIR}\linter_report.csv"
-                    def reportOptimized = "${REPORTS_DIR}\optimized.dockerfile"
-                    def reportExplanation = "${REPORTS_DIR}\explanation.txt"
+                    def venvActivate = "${VENV_DIR}\\Scripts\\activate"
+                    def mainScript = "${WORKSPACE}\\main.py"
+                    def reportCsv = "${REPORTS_DIR}\\linter_report.csv"
+                    def reportOptimized = "${REPORTS_DIR}\\optimized.dockerfile"
+                    def reportExplanation = "${REPORTS_DIR}\\explanation.txt"
 
                     def pythonCommand = "call \"${venvActivate}\" && python \"${mainScript}\" analyse \"${targetDockerfileInClonedRepoPath}\" --output-csv \"${reportCsv}\" --output-optimized-dockerfile \"${reportOptimized}\" --output-explanation \"${reportExplanation}\""
                     
