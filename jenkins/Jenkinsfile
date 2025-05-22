@@ -66,6 +66,7 @@ pipeline {
                     withCredentials([string(credentialsId: '84c11c8a-1308-47b7-81ed-869b3a635c8e', variable: 'OPENAI_API_KEY_FROM_JENKINS')]) {
                         // Ensure the reports directory exists
                         bat "mkdir \"${REPORTS_DIR}\""
+                        echo "DEBUG: Reports directory mkdir attempted. OPENAI_API_KEY_FROM_JENKINS should be set."
 
                         def dockerfileInTargetRepo = params.DOCKERFILE_PATH_IN_TARGET_REPO.replace('/', '\\')
                         def targetDockerfileInClonedRepoPath = "${TARGET_REPO_DIR}\\\\${dockerfileInTargetRepo}"
