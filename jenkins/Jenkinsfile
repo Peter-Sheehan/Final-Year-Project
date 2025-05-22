@@ -73,13 +73,25 @@ pipeline {
                         def venvActivate = "${VENV_DIR}\\\\Scripts\\\\activate"
                         def mainScript = "${WORKSPACE}\\\\main.py"
                         def reportCsv = "${REPORTS_DIR}\\\\linter_report.csv"
-                        def reportOptimized = "${REPORTS_DIR}\\\\optimized.dockerfile"
-                        def reportExplanation = "${REPORTS_DIR}\\\\explanation.txt"
+                        def reportOptimized = "${REPORTS_DIR}\\optimized.dockerfile"
+                        def reportExplanation = "${REPORTS_DIR}\\explanation.txt"
 
-                        def pythonCommand = "set OPENAI_API_KEY=${OPENAI_API_KEY_FROM_JENKINS} && call \\\"${venvActivate}\\\" && python \\\"${mainScript}\\\" analyse \\\"${targetDockerfileInClonedRepoPath}\\\" --output-csv \\\"${reportCsv}\\\" --output-optimized-dockerfile \\\"${reportOptimized}\\\" --output-explanation \\\"${reportExplanation}\\\"\"
+                        // Using triple-double-quotes for clarity and to help the Groovy parser with complex strings.
+                        // The actual command passed to 'bat' will be a single line.
+                        def commandParts = [
+                            "set OPENAI_API_KEY=${OPENAI_API_KEY_FROM_JENKINS}",
+                            "&&",
+                            "call \"${venvActivate}\"",
+                            "&&",
+                            "python \"${mainScript}\" analyse \"${targetDockerfileInClonedRepoPath}\"",
+                            "--output-csv \"${reportCsv}\"",
+                            "--output-optimized-dockerfile \"${reportOptimized}\"",
+                            "--output-explanation \"${reportExplanation}\""
+                        ]
+                        def pythonCommand = commandParts.join(" ")
                         
                         echo "Verifying Dockerfile exists at: ${targetDockerfileInClonedRepoPath}"
-                        bat "if not exist \\\"${targetDockerfileInClonedRepoPath}\\\" echo Dockerfile not found at ${targetDockerfileInClonedRepoPath}!\"
+                        bat "if not exist \\\"${targetDockerfileInClonedRepoPath}\\\" echo Dockerfile not found at ${targetDockerfileInClonedRepoPath}!"
                         
                         echo "Executing analysis command (OpenAI Key will be set from Jenkins credentials)"
                         bat pythonCommand
