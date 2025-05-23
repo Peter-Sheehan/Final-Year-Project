@@ -28,8 +28,8 @@ Before you begin, ensure you have the following installed on your system:
 
     ```bash
     git clone https://github.com/Peter-Sheehan/Final-Year-Project.git
+    cd Final-Year-Project
     ```
-
 
 2.  **Create and Activate a Virtual Environment (Recommended):**
     It's highly recommended to use a virtual environment to manage project dependencies.
@@ -50,7 +50,7 @@ Before you begin, ensure you have the following installed on your system:
       ```
 
 3.  **Install the Package:**
-    With the virtual environment activated, navigate to the root of the cloned repository (where `setup.py` is located) and install the `dockerai` package using pip:
+    With the virtual environment activated, ensure you are in the root directory of the `Final-Year-Project` (where `setup.py` is located). Then, install the `dockerai` package using pip:
     ```bash
     pip install .
     ```
@@ -69,8 +69,6 @@ The configuration directory is usually:
 
 - **Windows**: `%APPDATA%\DockerAI\`
 - **Linux/macOS**: `~/.config/DockerAI/`
-
-
 
 **Note on GitHub Token Scopes:**
 When creating your GitHub Personal Access Token, ensure it has the necessary scopes. For analysing public repositories, the `public_repo` scope is usually sufficient. For private repositories or creating Pull Requests, you might need `repo` scope.
