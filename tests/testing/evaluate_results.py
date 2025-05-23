@@ -26,11 +26,11 @@ WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 ANNOTATIONS_FILE = WORKSPACE_ROOT / "testing" / "Dockerfiles_set" / "benchmark_annotations.csv"
 BENCHMARK_DIR = WORKSPACE_ROOT / "testing" / "Dockerfiles_set" # Need directory of original files for Hadolint
 RULES_FILE = WORKSPACE_ROOT / "Rules" / "rules.json"
-OPTIMIZED_OUTPUT_DIR = WORKSPACE_ROOT / "testing" / "output" # Directory containing optimized files
+OPTIMISED_OUTPUT_DIR = WORKSPACE_ROOT / "testing" / "output" # Directory containing optimized files
 
 # Naming conventions for optimized files
-CUSTOM_OPTIMIZED_PREFIX = "optimised-"
-BASELINE_OPTIMIZED_PREFIX = "example1_baseline_"
+CUSTOM_OPTIMISED_PREFIX = "optimised-"
+BASELINE_OPTIMISED_PREFIX = "example1_baseline_"
 
 # --- Rule Mapping (Hadolint Code -> Annotation Title) ---
 # Re-introduce mapping for Hadolint comparison
@@ -203,9 +203,9 @@ def run_hadolint(filepath: Path) -> set[tuple[int, str]]:
 
 print("Starting Combined Evaluation...")
 print(f"1. Linter Accuracy (Custom vs Hadolint on Originals vs Annotations: {ANNOTATIONS_FILE})")
-print(f"2. Optimization Effectiveness (Custom vs Baseline on Optimized vs Annotations: {ANNOTATIONS_FILE})")
+print(f"2. Optimisation Effectiveness (Custom vs Baseline on Optimised vs Annotations: {ANNOTATIONS_FILE})")
 print(f"Original files expected in: {BENCHMARK_DIR}")
-print(f"Optimized files expected in: {OPTIMIZED_OUTPUT_DIR}")
+print(f"Optimised files expected in: {OPTIMISED_OUTPUT_DIR}")
 
 # 0. Check if Linter is available and rules file exists
 if not LINTER_AVAILABLE:
@@ -236,9 +236,9 @@ baseline_opt_tp, baseline_opt_fp, baseline_opt_fn = 0, 0, 0
 # 3. Instantiate the Custom Linter
 try:
     linter = DockerfileLinter(rules_path=str(RULES_FILE))
-    print(f"DockerfileLinter initialized with rules from {RULES_FILE}")
+    print(f"DockerfileLinter initialised with rules from {RULES_FILE}")
 except Exception as e:
-    print(f"Error initializing DockerfileLinter: {e}")
+    print(f"Error initialising DockerfileLinter: {e}")
     sys.exit(1)
 
 # 4. Process Each Annotated Original File
@@ -293,37 +293,37 @@ for original_filename_base in benchmark_filenames:
     # --- Optimization Effectiveness Evaluation --- #
     # Find corresponding optimized files
     # ... (File finding logic remains the same, including debug prints)
-    custom_opt_path_v1 = OPTIMIZED_OUTPUT_DIR / f"{CUSTOM_OPTIMIZED_PREFIX}{original_stem}.dockerfile"
-    custom_opt_path_v2 = OPTIMIZED_OUTPUT_DIR / f"{CUSTOM_OPTIMIZED_PREFIX}{original_stem}.Dockerfile" # Handle capitalization
-    baseline_opt_path_v1 = OPTIMIZED_OUTPUT_DIR / f"{BASELINE_OPTIMIZED_PREFIX}{original_stem}.dockerfile"
-    baseline_opt_path_v2 = OPTIMIZED_OUTPUT_DIR / f"{BASELINE_OPTIMIZED_PREFIX}{original_stem}.Dockerfile"
+    custom_opt_path_v1 = OPTIMISED_OUTPUT_DIR / f"{CUSTOM_OPTIMISED_PREFIX}{original_stem}.dockerfile"
+    custom_opt_path_v2 = OPTIMISED_OUTPUT_DIR / f"{CUSTOM_OPTIMISED_PREFIX}{original_stem}.Dockerfile" # Handle capitalization
+    baseline_opt_path_v1 = OPTIMISED_OUTPUT_DIR / f"{BASELINE_OPTIMISED_PREFIX}{original_stem}.dockerfile"
+    baseline_opt_path_v2 = OPTIMISED_OUTPUT_DIR / f"{BASELINE_OPTIMISED_PREFIX}{original_stem}.Dockerfile"
 
-    custom_optimized_file = None
+    custom_optimised_file = None
     # print(f"  Checking Custom Path 1: {custom_opt_path_v1} (Exists: {custom_opt_path_v1.is_file()})") # DEBUG REMOVED
     if custom_opt_path_v1.is_file():
-        custom_optimized_file = custom_opt_path_v1
+        custom_optimised_file = custom_opt_path_v1
     elif custom_opt_path_v2:
         # print(f"  Checking Custom Path 2: {custom_opt_path_v2} (Exists: {custom_opt_path_v2.is_file()})") # DEBUG REMOVED
         if custom_opt_path_v2.is_file():
-            custom_optimized_file = custom_opt_path_v2
+            custom_optimised_file = custom_opt_path_v2
 
-    baseline_optimized_file = None
+    baseline_optimised_file = None
     # print(f"  Checking Baseline Path 1: {baseline_opt_path_v1} (Exists: {baseline_opt_path_v1.is_file()})") # DEBUG REMOVED
     if baseline_opt_path_v1.is_file():
-        baseline_optimized_file = baseline_opt_path_v1
+        baseline_optimised_file = baseline_opt_path_v1
     elif baseline_opt_path_v2:
         # print(f"  Checking Baseline Path 2: {baseline_opt_path_v2} (Exists: {baseline_opt_path_v2.is_file()})") # DEBUG REMOVED
         if baseline_opt_path_v2.is_file():
-            baseline_optimized_file = baseline_opt_path_v2
+            baseline_optimised_file = baseline_opt_path_v2
 
     # If both optimized files found, proceed with effectiveness comparison
-    if custom_optimized_file and baseline_optimized_file:
+    if custom_optimised_file and baseline_optimised_file:
         comparable_files_count += 1
-        print(f"  Found Optimized Files: Custom='{custom_optimized_file.name}', Baseline='{baseline_optimized_file.name}'")
-        print("  Evaluating Optimization Effectiveness...")
+        print(f"  Found Optimised Files: Custom='{custom_optimised_file.name}', Baseline='{baseline_optimised_file.name}'")
+        print("  Evaluating Optimisation Effectiveness...")
 
-        # Evaluate Custom Optimized File vs Original Annotations
-        issues_found_custom_opt = run_linter_on_file(linter, custom_optimized_file)
+        # Evaluate Custom Optimised File vs Original Annotations
+        issues_found_custom_opt = run_linter_on_file(linter, custom_optimised_file)
         resolved_custom = annotation_set.difference(issues_found_custom_opt)
         unresolved_custom = annotation_set.intersection(issues_found_custom_opt)
         new_issues_custom = issues_found_custom_opt.difference(annotation_set)
@@ -335,8 +335,8 @@ for original_filename_base in benchmark_filenames:
         custom_opt_fp += fp_c_opt
         print(f"    Custom Opt. Results: Resolved={tp_c_opt}, Unresolved={fn_c_opt}, New Issues={fp_c_opt}")
 
-        # Evaluate Baseline Optimized File vs Original Annotations
-        issues_found_baseline_opt = run_linter_on_file(linter, baseline_optimized_file)
+        # Evaluate Baseline Optimised File vs Original Annotations
+        issues_found_baseline_opt = run_linter_on_file(linter, baseline_optimised_file)
         resolved_baseline = annotation_set.difference(issues_found_baseline_opt)
         unresolved_baseline = annotation_set.intersection(issues_found_baseline_opt)
         new_issues_baseline = issues_found_baseline_opt.difference(annotation_set)
@@ -349,7 +349,7 @@ for original_filename_base in benchmark_filenames:
         print(f"    Baseline Opt. Results: Resolved={tp_b_opt}, Unresolved={fn_b_opt}, New Issues={fp_b_opt}")
 
     else:
-        print("  Warning: Skipping Optimization Effectiveness comparison for this file (missing one or both optimized versions).", file=sys.stderr)
+        print("  Warning: Skipping Optimisation Effectiveness comparison for this file (missing one or both optimised versions).", file=sys.stderr)
 
 
 # 5. Calculate and Report Overall Metrics
@@ -381,7 +381,7 @@ else:
      print("{:<15} | {:<10} | {:<10} | {:<10} | {:<10} | {:<10} | {:<10}".format("Hadolint", hadolint_tp, hadolint_fp, hadolint_fn, "N/A", "N/A", "N/A"))
 
 # Optimization Effectiveness Results
-print("\nPart 2: Optimization Effectiveness Comparison (on Optimized Files vs Original Annotations)")
+print("\nPart 2: Optimisation Effectiveness Comparison (on Optimised Files vs Original Annotations)")
 if comparable_files_count > 0:
     # Calculate metrics for Custom Opt method
     precision_c_opt, recall_c_opt, f1_c_opt = calculate_metrics(custom_opt_tp, custom_opt_fp, custom_opt_fn)
@@ -391,7 +391,7 @@ if comparable_files_count > 0:
     precision_b_opt, recall_b_opt, f1_b_opt = calculate_metrics(baseline_opt_tp, baseline_opt_fp, baseline_opt_fn)
     # Sanity check:
     if total_original_issues_opt != (baseline_opt_tp + baseline_opt_fn):
-         print("\nWarning: Mismatch in total original issues counted for optimization comparison. Check logs.")
+         print("\nWarning: Mismatch in total original issues counted for optimisation comparison. Check logs.")
 
     print(f"Files Compared: {comparable_files_count}")
     print(f"Total Original Issues Annotated (across compared files): {total_original_issues_opt}")
@@ -448,17 +448,17 @@ if comparable_files_count > 0:
             "f1_score": f1_b_opt
         }
     }
-    opt_summary_file_path = WORKSPACE_ROOT / "testing" / "optimization_comparison_summary.json" # Renamed file
+    opt_summary_file_path = WORKSPACE_ROOT / "testing" / "optimisation_comparison_summary.json"
     try:
         # import json # Already imported
         with open(opt_summary_file_path, 'w', encoding='utf-8') as f:
             json.dump(opt_summary_data, f, indent=2)
-        print(f"Saved optimization comparison summary to: {opt_summary_file_path}")
+        print(f"Saved optimisation comparison summary to: {opt_summary_file_path}")
     except Exception as e:
-        print(f"\nError saving optimization comparison summary: {e}", file=sys.stderr)
+        print(f"\nError saving optimisation comparison summary: {e}", file=sys.stderr)
 
 else:
-    print("\nNo files could be fully processed for optimization comparison (missing optimized files?).")
+    print("\nNo files could be fully processed for optimisation comparison (missing optimised files?).")
 
 print("\nEvaluation Complete.")
 

@@ -7,12 +7,10 @@ const path = require('path');
 let diagnosticCollection;
 let outputChannel;
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-
 /**
  * @param {vscode.ExtensionContext} context
  */
+// Called when the extension is activated
 function activate(context) {
 	outputChannel = vscode.window.createOutputChannel('Docker Linter');
 	outputChannel.show();
@@ -21,16 +19,13 @@ function activate(context) {
 	diagnosticCollection = vscode.languages.createDiagnosticCollection('dockerfile');
 	context.subscriptions.push(diagnosticCollection);
 
-	// Lint on document open
+	// Lint documents on open, save, and change
 	vscode.workspace.onDidOpenTextDocument(lintDocument);
 	
-	// Lint on document save
 	vscode.workspace.onDidSaveTextDocument(lintDocument);
 	
-	// Lint on document change
 	vscode.workspace.onDidChangeTextDocument(e => lintDocument(e.document));
 	
-	// Register manual lint command
 	context.subscriptions.push(
 		vscode.commands.registerCommand('docker-linter.runLint', () => {
 			const editor = vscode.window.activeTextEditor;
@@ -39,6 +34,7 @@ function activate(context) {
 	);
 }
 
+// Asynchronously lints a given document
 async function lintDocument(document) {
 	if (document.languageId !== 'dockerfile') return;
 
@@ -50,21 +46,21 @@ async function lintDocument(document) {
 	}
 }
 
+// Runs the external Python linter script
 async function runLinter(document) {
 	const tempDir = require('os').tmpdir();
 	const tempPath = path.join(tempDir, `docker-linter-${Date.now()}.Dockerfile`);
 	const content = document.getText();
 	
-	// Write the exact content without modifying line endings
+	// Write document content to a temporary file for the linter
 	require('fs').writeFileSync(tempPath, content);
 
 	let output;
 
 	try {
-		// Use double quotes for Windows paths
 		const pythonScriptPath = `"${path.join(__dirname, '../../lint_cli.py').replace(/\\/g, '/')}"`;
 		const quotedTempPath = `"${tempPath.replace(/\\/g, '/')}"`;
-		const rulesPath = `"${path.join(__dirname, '../../../Code/rules.json').replace(/\\/g, '/')}"`;
+		const rulesPath = `"${path.join(__dirname, '../../../Code/Rules/rules.json').replace(/\\/g, '/')}"`;
 		
 		outputChannel.appendLine(`Running linter command: python ${pythonScriptPath} ${quotedTempPath} --format json --rules ${rulesPath}`);
 		
@@ -81,14 +77,15 @@ async function runLinter(document) {
 			throw new Error(result.error);
 		}
 
-		// Map the line numbers to actual document content
+		// Map linter line numbers to actual document line numbers
+		// This is necessary if the linter reports based on its temporary file content
 		if (result.issues) {
 			result.issues = result.issues.map(issue => {
 				// Find the actual line in the document that matches the content
 				for (let i = 0; i < document.lineCount; i++) {
 					const line = document.lineAt(i);
 					if (line.text.trim() === issue.line_content?.trim()) {
-						issue.line_number = i + 1; // Convert to 1-based index
+						issue.line_number = i + 1; // Convert to 1-based index for linter
 						break;
 					}
 				}
@@ -104,7 +101,7 @@ async function runLinter(document) {
 		}
 		throw error;
 	} finally {
-		// Clean up temp file
+		// Always clean up the temporary file
 		try {
 			require('fs').unlinkSync(tempPath);
 		} catch (err) {
@@ -113,20 +110,20 @@ async function runLinter(document) {
 	}
 }
 
+// Displays linting issues as diagnostics in the editor
 function showDiagnostics(document, issues) {
 	outputChannel.appendLine(`Number of issues being processed in showDiagnostics: ${issues.length}`);
 	const diagnostics = [];
 	
 	issues.forEach(issue => {
 		try {
-			// Parse line number exactly as it comes from the linter
 			let lineNumber = parseInt(issue.line_number, 10);
 			if (isNaN(lineNumber)) {
 				outputChannel.appendLine(`Skipping issue - Invalid line number format: ${issue.line_number}`);
 				return;
 			}
 			
-			// Convert to 0-based index
+			// Adjust for 0-based indexing in VS Code API
 			lineNumber = lineNumber - 1;
 			
 			// Validate line number is within document bounds
@@ -135,14 +132,13 @@ function showDiagnostics(document, issues) {
 				return;
 			}
 
-			// Get the line text and ensure we have content
 			const line = document.lineAt(lineNumber);
 			const lineText = line.text;
 			
-			// If the line is empty or whitespace, try to find the next non-empty line
 			let actualLineNumber = lineNumber;
 			let actualLineText = lineText;
 			
+			// If the reported line is empty, find the next non-empty line for the diagnostic
 			if (!lineText.trim() && lineNumber + 1 < document.lineCount) {
 				for (let i = lineNumber + 1; i < document.lineCount; i++) {
 					const nextLine = document.lineAt(i);
@@ -154,10 +150,9 @@ function showDiagnostics(document, issues) {
 				}
 			}
 			
-			// Create a range that covers the actual content
 			const range = new vscode.Range(
 				new vscode.Position(actualLineNumber, 0),
-				new vscode.Position(actualLineNumber, actualLineText.length || 1) // Ensure at least 1 character
+				new vscode.Position(actualLineNumber, actualLineText.length || 1)
 			);
 
 			const diagnostic = new vscode.Diagnostic(
@@ -176,22 +171,23 @@ function showDiagnostics(document, issues) {
 		}
 	});
 
-	// Clear existing diagnostics before setting new ones
+	// Clear previous diagnostics and set new ones
 	diagnosticCollection.clear();
 	diagnosticCollection.set(document.uri, diagnostics);
 	outputChannel.appendLine(`Set ${diagnostics.length} diagnostics`);
 }
 
+// Converts severity string from config to VS Code DiagnosticSeverity
 function getSeverity(severity) {
 	const config = vscode.workspace.getConfiguration('dockerLinter').get('severityLevels');
 	switch (config[severity] || 'information') {
-		case 'error': return vscode.DiagnosticSeverity.Error;        // Red underline
-		case 'warning': return vscode.DiagnosticSeverity.Warning;    // Yellow/Orange underline
-		default: return vscode.DiagnosticSeverity.Information;       // Blue underline
+		case 'error': return vscode.DiagnosticSeverity.Error;
+		case 'warning': return vscode.DiagnosticSeverity.Warning;
+		default: return vscode.DiagnosticSeverity.Information;
 	}
 }
 
-// This method is called when your extension is deactivated
+// Called when the extension is deactivated
 function deactivate() {}
 
 module.exports = {

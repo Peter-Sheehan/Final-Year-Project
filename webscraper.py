@@ -77,9 +77,6 @@ def update_rules(config_dir):
         return False
 
 if __name__ == "__main__":
-    # Example usage if run directly (requires config dir logic)
-    # For simplicity, we might remove direct execution or add config dir finding here too
     print("Running webscraper directly is not the intended use.")
-    # If you want to allow direct running, you'd need to duplicate
-    # the get_config_dir logic here or import it from main.
+   
     pass # Placeholder to avoid syntax error

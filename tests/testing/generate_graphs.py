@@ -9,7 +9,7 @@ import os # Import os module for creating directories
 
 # --- Configuration ---
 LINTER_SUMMARY_FILE_PATH = Path("testing/linter_comparison_summary.json")
-OPTIMIZATION_SUMMARY_FILE_PATH = Path("testing/optimization_comparison_summary.json")
+OPTIMISATION_SUMMARY_FILE_PATH = Path("testing/optimisation_comparison_summary.json")
 GRAPH_OUTPUT_DIR = Path("testing/graphs") # Define output directory for graphs
 
 # --- Ensure Graph Output Directory Exists ---
@@ -35,17 +35,17 @@ except Exception as e:
     sys.exit(1)
 
 # --- Load Data from Optimization Comparison Summary ---
-optimization_data = {}
+optimisation_data = {}
 try:
-    with open(OPTIMIZATION_SUMMARY_FILE_PATH, 'r', encoding='utf-8') as f:
-        optimization_data = json.load(f)
-    print(f"Loaded optimization comparison summary from: {OPTIMIZATION_SUMMARY_FILE_PATH}")
+    with open(OPTIMISATION_SUMMARY_FILE_PATH, 'r', encoding='utf-8') as f:
+        optimisation_data = json.load(f)
+    print(f"Loaded optimisation comparison summary from: {OPTIMISATION_SUMMARY_FILE_PATH}")
 except FileNotFoundError:
-    print(f"Error: Optimization comparison summary file not found at '{OPTIMIZATION_SUMMARY_FILE_PATH}'.", file=sys.stderr)
+    print(f"Error: Optimisation comparison summary file not found at '{OPTIMISATION_SUMMARY_FILE_PATH}'.", file=sys.stderr)
     print("Please run 'evaluate_results.py' first.", file=sys.stderr)
     sys.exit(1)
 except Exception as e:
-    print(f"Error reading optimization summary file '{OPTIMIZATION_SUMMARY_FILE_PATH}': {e}", file=sys.stderr)
+    print(f"Error reading optimisation summary file '{OPTIMISATION_SUMMARY_FILE_PATH}': {e}", file=sys.stderr)
     sys.exit(1)
 
 # --- Load Detailed Evaluation Results ---
@@ -130,10 +130,10 @@ if any(custom_linter_scores) or any(hadolint_scores):
 else:
     print("Skipping Linter Accuracy graph: No data found.")
 
-# --- Graph 2: Optimization Effectiveness (Counts) --- #
-print("\nGenerating Graph 2: Optimization Effectiveness (Counts)...")
-custom_opt_results = optimization_data.get("custom_results", {})
-baseline_opt_results = optimization_data.get("baseline_results", {})
+# --- Graph 2: Optimisation Effectiveness (Counts) --- #
+print("\nGenerating Graph 2: Optimisation Effectiveness (Counts)...")
+custom_opt_results = optimisation_data.get("custom_results", {})
+baseline_opt_results = optimisation_data.get("baseline_results", {})
 
 opt_count_metrics = ['Resolved Issues', 'Unresolved Issues', 'New Issues Introduced']
 custom_opt_counts = [
@@ -157,7 +157,7 @@ if any(custom_opt_counts) or any(baseline_opt_counts):
 
     # Add labels, title, and ticks
     ax_opt_counts.set_ylabel('Number of Issues')
-    ax_opt_counts.set_title('Comparison of Optimization Effectiveness (Issue Counts)')
+    ax_opt_counts.set_title('Comparison of Optimisation Effectiveness (Issue Counts)')
     ax_opt_counts.set_xticks(x_opt_counts)
     ax_opt_counts.set_xticklabels(opt_count_metrics)
     max_count = max(max(custom_opt_counts), max(baseline_opt_counts))
@@ -169,16 +169,16 @@ if any(custom_opt_counts) or any(baseline_opt_counts):
 
     fig_opt_counts.tight_layout()
 
-    # Save the optimization effectiveness counts graph
-    opt_counts_graph_filename = GRAPH_OUTPUT_DIR / 'optimization_effectiveness_counts.png' # Renamed
+    # Save the optimisation effectiveness counts graph
+    opt_counts_graph_filename = GRAPH_OUTPUT_DIR / 'optimisation_effectiveness_counts.png' # Renamed
     plt.savefig(opt_counts_graph_filename)
     print(f"Saved graph: {opt_counts_graph_filename}")
     plt.close(fig_opt_counts)
 else:
-    print("Skipping Optimization Effectiveness Counts graph: No data found.")
+    print("Skipping Optimisation Effectiveness Counts graph: No data found.")
 
-# --- Graph 3: Optimization Effectiveness (Metrics) --- #
-print("\nGenerating Graph 3: Optimization Effectiveness (Metrics)...")
+# --- Graph 3: Optimisation Effectiveness (Metrics) --- #
+print("\nGenerating Graph 3: Optimisation Effectiveness (Metrics)...")
 opt_metric_labels = ['Recall\n(Resolution Rate)', 'F1-Score']
 custom_opt_scores = [
     custom_opt_results.get("recall", 0.0),
@@ -199,7 +199,7 @@ if any(custom_opt_scores) or any(baseline_opt_scores):
 
     # Add labels, title, and ticks
     ax_opt_metrics.set_ylabel('Score (0.0 - 1.0)')
-    ax_opt_metrics.set_title('Comparison of Optimization Metrics')
+    ax_opt_metrics.set_title('Comparison of Optimisation Metrics')
     ax_opt_metrics.set_xticks(x_opt_scores)
     ax_opt_metrics.set_xticklabels(opt_metric_labels)
     ax_opt_metrics.set_ylim(0, 1.1)
@@ -215,13 +215,13 @@ if any(custom_opt_scores) or any(baseline_opt_scores):
 
     fig_opt_metrics.tight_layout(rect=[0, 0.06, 1, 1]) # Adjust layout
 
-    # Save the optimization effectiveness metrics graph
-    opt_metrics_graph_filename = GRAPH_OUTPUT_DIR / 'optimization_effectiveness_metrics.png' # Renamed
+    # Save the optimisation effectiveness metrics graph
+    opt_metrics_graph_filename = GRAPH_OUTPUT_DIR / 'optimisation_effectiveness_metrics.png' # Renamed
     plt.savefig(opt_metrics_graph_filename)
     print(f"Saved graph: {opt_metrics_graph_filename}")
     plt.close(fig_opt_metrics)
 else:
-    print("Skipping Optimization Effectiveness Metrics graph: No data found.")
+    print("Skipping Optimisation Effectiveness Metrics graph: No data found.")
 
 # --- NEW Graph 4: Analysis Duration vs. Dockerfile Size --- #
 print("\nGenerating Graph 4: Analysis Duration vs. Dockerfile Size...")

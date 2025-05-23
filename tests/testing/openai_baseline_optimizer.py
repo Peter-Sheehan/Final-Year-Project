@@ -42,7 +42,7 @@ def read_dockerfile(path: str) -> str:
         exit(1)
 
 def extract_dockerfile_content(ai_response: str) -> Optional[str]:
-    """Extract optimized Dockerfile content from AI response."""
+    """Extract optimised Dockerfile content from AI response."""
     # Regex to find ```dockerfile ... ``` block
     match = re.search(r"```dockerfile\s*\n(.*?)\n```", ai_response, re.DOTALL | re.IGNORECASE)
     if match:
@@ -53,9 +53,9 @@ def extract_dockerfile_content(ai_response: str) -> Optional[str]:
     console.print("[yellow]Warning: Could not extract Dockerfile content using ```dockerfile fence. Check response format.[/yellow]")
     return None # Indicate failure to extract
 
-def get_baseline_optimization(content: str) -> Optional[str]:
-    """Get baseline optimization using gpt-4o with a minimal prompt."""
-    prompt = f"""Optimize the following Dockerfile for size, build speed, and security. Provide only the optimized Dockerfile content within a ```dockerfile code block.
+def get_baseline_optimisation(content: str) -> Optional[str]:
+    """Get baseline optimisation using gpt-4o with a minimal prompt."""
+    prompt = f"""Optimise the following Dockerfile for size, build speed, and security. Provide only the optimised Dockerfile content within a ```dockerfile code block.
 
 ```dockerfile
 {content}
@@ -66,7 +66,7 @@ def get_baseline_optimization(content: str) -> Optional[str]:
         response = openai.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are a Dockerfile optimization tool. Respond only with the optimized Dockerfile inside a ```dockerfile block."},
+                {"role": "system", "content": "You are a Dockerfile optimisation tool. Respond only with the optimised Dockerfile inside a ```dockerfile block."},
                 {"role": "user", "content": prompt}
             ]
         )
@@ -83,8 +83,8 @@ def get_baseline_optimization(content: str) -> Optional[str]:
         console.print(f"[red]Error calling OpenAI API: {e}[/red]")
         return None
 
-def save_optimized_dockerfile(content: str, output_path: str):
-    """Save the optimized Dockerfile content to a file."""
+def save_optimised_dockerfile(content: str, output_path: str):
+    """Save the optimised Dockerfile content to a file."""
     try:
         # Ensure the output directory exists
         output_dir = os.path.dirname(output_path)
@@ -93,9 +93,9 @@ def save_optimized_dockerfile(content: str, output_path: str):
 
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(content)
-        console.print(f"[green]✓ Baseline optimized Dockerfile saved to: {output_path}[/green]")
+        console.print(f"[green]✓ Baseline optimised Dockerfile saved to: {output_path}[/green]")
     except Exception as e:
-        console.print(f"[red]Error saving optimized Dockerfile to {output_path}: {e}[/red]")
+        console.print(f"[red]Error saving optimised Dockerfile to {output_path}: {e}[/red]")
         exit(1)
 
 @click.command()
@@ -103,21 +103,21 @@ def save_optimized_dockerfile(content: str, output_path: str):
 @click.argument('output_dockerfile', type=click.Path(writable=True, dir_okay=False))
 def main(input_dockerfile: str, output_dockerfile: str):
     """
-    Optimizes a Dockerfile using OpenAI GPT-4o with a minimal prompt (baseline).
+    Optimises a Dockerfile using OpenAI GPT-4o with a minimal prompt (baseline).
 
     INPUT_DOCKERFILE: Path to the original Dockerfile.
-    OUTPUT_DOCKERFILE: Path where the baseline optimized Dockerfile will be saved.
+    OUTPUT_DOCKERFILE: Path where the baseline optimised Dockerfile will be saved.
     """
     console.print(f"Reading Dockerfile: {input_dockerfile}")
     original_content = read_dockerfile(input_dockerfile)
 
-    console.print("Generating baseline optimization...")
-    optimized_content = get_baseline_optimization(original_content)
+    console.print("Generating baseline optimisation...")
+    optimised_content = get_baseline_optimisation(original_content)
 
-    if optimized_content:
-        save_optimized_dockerfile(optimized_content, output_dockerfile)
+    if optimised_content:
+        save_optimised_dockerfile(optimised_content, output_dockerfile)
     else:
-        console.print("[red]Failed to generate or extract baseline optimization.[/red]")
+        console.print("[red]Failed to generate or extract baseline optimisation.[/red]")
         exit(1)
 
 if __name__ == '__main__':

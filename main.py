@@ -51,7 +51,7 @@ class VersionMatch(Enum):
     # Could also add: NO_CATALOG_ENTRY_FOR_PACKAGE, NO_CATALOG_ENTRY_FOR_DISTRO
     # For now, these will result in NO_MATCH
 
-class DockerfileOptimizer:
+class DockerfileOptimiser:
     def __init__(self):
         self.console = Console()
         self.config_dir = get_config_dir() # Get application configuration directory
@@ -445,11 +445,11 @@ class DockerfileOptimizer:
         processed_optimized_content = None # Use this for build and final result
         explanation = None
         try:
-            # Extract the optimized Dockerfile content and explanation from suggestions
+            # Extract the optimised Dockerfile content and explanation from suggestions
             raw_optimized_content, explanation = self._extract_dockerfile_content(suggestions)
             
             if raw_optimized_content:
-                # <<< NEW: Post-process the AI content >>>
+                # Post-process the AI content 
                 processed_optimized_content = self._post_process_optimized_content(raw_optimized_content)
                 
                 # Build using the processed content
@@ -1034,7 +1034,7 @@ def get_config_dir() -> Path:
 
 @click.group()
 def cli():
-    """Dockerfile Optimizer and Linter CLI"""
+    """Dockerfile Optimiser and Linter CLI"""
     pass
 
 @cli.command()
@@ -1047,23 +1047,23 @@ def cli():
 def analyse(dockerfile_path: str, output: str, output_csv: Optional[str], output_optimized_dockerfile: Optional[str], output_explanation: Optional[str], perform_docker_builds: bool):
     """Analyze a Dockerfile using linter and AI, then suggest optimizations."""
     try:
-        optimizer = DockerfileOptimizer()
-        optimizer.attempt_docker_builds = perform_docker_builds # Set the user's choice
+        optimiser = DockerfileOptimiser()
+        optimiser.attempt_docker_builds = perform_docker_builds # Set the user's choice
 
         if perform_docker_builds:
             # This initial message sets user expectation. _ensure_docker_client will print more specific warnings when it tries to connect.
-            optimizer.console.print("[cyan]Docker image builds enabled by user. Will attempt to connect to Docker daemon if/when build analysis is performed.[/cyan]")
+            optimiser.console.print("[cyan]Docker image builds enabled by user. Will attempt to connect to Docker daemon if/when build analysis is performed.[/cyan]")
 
         # --- BEGIN Timing Addition ---
         start_time = time.monotonic()
         # --- END Timing Addition ---
 
-        analysis = optimizer.analyse_dockerfile(dockerfile_path)
+        analysis = optimiser.analyse_dockerfile(dockerfile_path)
 
         # --- BEGIN Timing Addition ---
         end_time = time.monotonic()
         duration_seconds = end_time - start_time
-        optimizer.console.print(f"[dim]Analysis completed in {duration_seconds:.2f} seconds.[/dim]") # Optional: print duration
+        optimiser.console.print(f"[dim]Analysis completed in {duration_seconds:.2f} seconds.[/dim]") # Optional: print duration
         # --- END Timing Addition ---
 
         if output == 'json':
@@ -1101,7 +1101,7 @@ def analyse(dockerfile_path: str, output: str, output_csv: Optional[str], output
                 'dockerfile_size_bytes': dockerfile_size_bytes
             }, indent=2))
         else:
-            optimizer.print_analysis(analysis)
+            optimiser.print_analysis(analysis)
             # Optionally print duration in text mode too
             # optimizer.console.print(f"\nAnalysis Duration: {duration_seconds:.2f} seconds")
 
@@ -1120,11 +1120,11 @@ def analyse(dockerfile_path: str, output: str, output_csv: Optional[str], output
                          os.makedirs(output_dir, exist_ok=True)
                     with open(output_optimized_dockerfile, 'w', encoding='utf-8') as f:
                         f.write(analysis.optimized_content)
-                    optimizer.console.print(f"Optimized Dockerfile saved to: {output_optimized_dockerfile}")
+                    optimiser.console.print(f"Optimized Dockerfile saved to: {output_optimized_dockerfile}")
                 except Exception as e:
-                    optimizer.console.print(f"[red]Error saving optimized Dockerfile: {e}[/red]")
+                    optimiser.console.print(f"[red]Error saving optimized Dockerfile: {e}[/red]")
             else:
-                optimizer.console.print("[yellow]Warning: No optimized Dockerfile content available to save.[/yellow]")
+                optimiser.console.print("[yellow]Warning: No optimized Dockerfile content available to save.[/yellow]")
 
         # Save explanation if requested and available
         if output_explanation:
@@ -1136,11 +1136,11 @@ def analyse(dockerfile_path: str, output: str, output_csv: Optional[str], output
                         os.makedirs(output_dir, exist_ok=True)
                     with open(output_explanation, 'w', encoding='utf-8') as f:
                         f.write(analysis.explanation)
-                    optimizer.console.print(f"Optimization explanation saved to: {output_explanation}")
+                    optimiser.console.print(f"Optimization explanation saved to: {output_explanation}")
                 except Exception as e:
-                    optimizer.console.print(f"[red]Error saving explanation: {e}[/red]")
+                    optimiser.console.print(f"[red]Error saving explanation: {e}[/red]")
             else:
-                optimizer.console.print("[yellow]Warning: No explanation available to save.[/yellow]")
+                optimiser.console.print("[yellow]Warning: No explanation available to save.[/yellow]")
         # --- END File Output Addition ---
 
     except Exception as e:
@@ -1153,8 +1153,8 @@ def analyse(dockerfile_path: str, output: str, output_csv: Optional[str], output
 def optimize_github(repo_url: str):
     """Optimize Dockerfile from a GitHub repository and create a PR."""
     try:
-        optimizer = DockerfileOptimizer()
-        result = optimizer.optimize_from_github(repo_url)
+        optimiser = DockerfileOptimiser()
+        result = optimiser.optimize_from_github(repo_url)
         print(result)
     except Exception as e:
         Console().print_exception(show_locals=True)

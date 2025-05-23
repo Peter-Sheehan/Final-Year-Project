@@ -7,7 +7,7 @@ from dockerfile_linter import DockerfileLinter
 import traceback
 
 # Add these color constants at the top of lint_cli.py
-SEVERITY_COLORS = {
+SEVERITY_COLOURS = {
     'CRITICAL': '\033[38;5;196m',  # Darker/Deep Red (256-color mode)
     'HIGH': '\033[31m',            # Regular Red
     'MEDIUM': '\033[33m',          # Yellow
@@ -15,8 +15,8 @@ SEVERITY_COLORS = {
     'RESET': '\033[0m'             # Reset color
 }
 
-HIGHLIGHT_COLOR = '\033[1m'  # Bold
-ERROR_COLOR = '\033[91m'     # Bright Red for error highlights
+HIGHLIGHT_COLOUR = '\033[1m'  # Bold
+ERROR_COLOUR = '\033[91m'     # Bright Red for error highlights
 
 def generate_csv_report(dockerfile_path: str, issues: list, output_dir: str = "linter_reports"):
     """Generate a CSV report of linting issues."""
@@ -111,7 +111,7 @@ def format_linter_errors(dockerfile_path: str, issues: list) -> str:
     """Format linter errors in a clear, structured way.
     
     Args:
-        dockerfile_path: Path to the Dockerfile being analyzed
+        dockerfile_path: Path to the Dockerfile being analysed
         issues: List of LinterIssue objects
         
     Returns:
@@ -146,25 +146,25 @@ def format_linter_errors(dockerfile_path: str, issues: list) -> str:
     for severity in ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']:
         count = len(issues_by_severity[severity])
         if count > 0:
-            colored_severity = f"{SEVERITY_COLORS[severity]}{severity}{SEVERITY_COLORS['RESET']}"
-            report.append(f"- {colored_severity}: {count} issue{'s' if count > 1 else ''}")
+            coloured_severity = f"{SEVERITY_COLOURS[severity]}{severity}{SEVERITY_COLOURS['RESET']}"
+            report.append(f"- {coloured_severity}: {count} issue{'s' if count > 1 else ''}")
     
     report.extend([
         "\nErrors:",
-        "___\n"
+        "___"
     ])
     
     # Add detailed issues by severity with colors
     for severity in ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']:
         severity_issues = issues_by_severity[severity]
         if severity_issues:
-            colored_severity = f"{SEVERITY_COLORS[severity]}{severity}{SEVERITY_COLORS['RESET']}"
-            report.append(f"### {colored_severity} Severity Issues")
+            coloured_severity = f"{SEVERITY_COLOURS[severity]}{severity}{SEVERITY_COLOURS['RESET']}"
+            report.append(f"### {coloured_severity} Severity Issues")
             
             for issue in severity_issues:
                 report.extend([
                     f"\n**Line {issue.line_number}**: {issue.line_content}",
-                    f"- **Rule**: {HIGHLIGHT_COLOR}{SEVERITY_COLORS[severity]}{issue.rule.title}{SEVERITY_COLORS['RESET']}",
+                    f"- **Rule**: {HIGHLIGHT_COLOUR}{SEVERITY_COLOURS[severity]}{issue.rule.title}{SEVERITY_COLOURS['RESET']}",
                     f"- **Issue**: {issue.rule.description}",
                     f"- **Fix**: {issue.rule.suggestion}",
                     "\n---"

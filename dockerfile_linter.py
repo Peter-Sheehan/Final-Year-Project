@@ -43,7 +43,7 @@ class DockerfileLinter:
     """A linter for Dockerfiles that checks for best practices and security issues."""
     
     def __init__(self, rules_path=os.path.join(os.path.dirname(__file__), "Rules", "rules.json")):
-        """Initialize the linter with rules from a JSON file."""
+        """Initialise the linter with rules from a JSON file."""
         self.rules_path = rules_path
         self.rules = self._load_rules()
         
